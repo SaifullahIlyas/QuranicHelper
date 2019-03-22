@@ -15,24 +15,20 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.my_toolbar))
-        val animation2 = AnimationUtils.loadAnimation(
-            applicationContext,
-            R.anim.blink
-        )
+        setSupportActionBar(this.findViewById(R.id.my_toolbar))
         val animation = AnimationUtils.loadAnimation(
             applicationContext,
             R.anim.blink
         )
         val mic = findViewById(R.id.mic) as? ImageView
         mic!!.startAnimation(animation)
-        val mic1 = findViewById(R.id.mic) as? ImageView
+
 
     }
     fun MenuOPtion(view:View)
     {
         try {
-            val intent = Intent(this, feedBack::class.java)
+            val intent = Intent(this, feedbackJ::class.java)
             startActivity(intent)
         }
         catch (e:Exception)

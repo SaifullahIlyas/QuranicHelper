@@ -7,7 +7,7 @@
     </LinearLayout>
 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="50dp" android:layout_marginLeft="2dp" android:layout_marginRight="2dp" android:orientation="vertical">
     <EditText android:id="@+id/messageFeed" android:hint="FeedBack Message" android:layout_width="match_parent" android:layout_height="match_parent"/>
-    <Button android:layout_width="100dp" android:onClick="messageSentListner" android:layout_height="wrap_content" android:text="Send" android:textSize="30sp" android:textAllCaps="false" android:layout_marginTop="100dp" android:layout_gravity="center"/>
+    <Button android:layout_width="100dp" android:onClick="menuOPtion" android:layout_height="wrap_content" android:text="Send" android:textSize="30sp" android:textAllCaps="false" android:layout_marginTop="100dp" android:layout_gravity="center"/>
 </LinearLayout>
 
 </LinearLayout>
