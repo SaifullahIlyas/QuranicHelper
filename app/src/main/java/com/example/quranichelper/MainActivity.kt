@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity() {
         )
         val mic = findViewById(R.id.mic) as? ImageView
         mic!!.startAnimation(animation)
+        val mic1 = findViewById(R.id.mic) as? ImageView
 
     }
 }
