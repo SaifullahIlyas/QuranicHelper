@@ -6,7 +6,6 @@ import android.view.animation.AnimationUtils
 import android.view.animation.Animation
 import android.widget.ImageView
 
-//this is commit i want to performnbnbnbnbnbnbb
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
