@@ -17,9 +17,7 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity android:name=".feedbackJ">
         </activity>
-        <activity android:name=".feedBack">
-        </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".Home">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

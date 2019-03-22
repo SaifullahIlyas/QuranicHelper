@@ -1,8 +1,9 @@
 package com.example.quranichelper;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Handler;
+import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -10,36 +11,39 @@ import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.Switch;
-import android.widget.Toast;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import static android.widget.Toast.LENGTH_LONG;
-
-public class feedbackJ extends AppCompatActivity {
-private TextToSpeech tts;
-private EditText input;
-Timer timer;
-private SpeechRecognizer mSP;
-
+public class Home extends AppCompatActivity {
+    Animation animation;
+    ImageView mic,speeker;
+    TextToSpeech tts;
+    SpeechRecognizer mSP;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_feed_back );
+        setContentView(R.layout.activity_main);
         setSupportActionBar((Toolbar) findViewById(R.id.my_toolbar));
-        input= findViewById(R.id.messageFeed);
-        intilaizeEngine();//set text to speach
-        getSpeachRecognizer();//set speach recognition
+          animation = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.blink);
+          speeker = findViewById(R.id.speaker);
+          speeker.startAnimation(animation);
     }
+
+protected void MenuOPtion(View view)
+{
+    Intent intent = new Intent( this,feedbackJ.class);
+    startActivity(intent);
+}
+public void perepereMenu()
+{
+
+}
     public void intilaizeEngine()//this is the code to initilize Text to Speach
     {
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
@@ -53,7 +57,7 @@ private SpeechRecognizer mSP;
                 }
                 else {
                     tts.setLanguage(Locale.ENGLISH);
-                   speeak("Please Record You feedBack  ");
+                    speeak("Please Record You feedBack  ");
                 }
                /* if (status==TextToSpeech.SUCCESS)
                 {
@@ -66,12 +70,6 @@ private SpeechRecognizer mSP;
 
             }
         });
-    }
-    protected   void  menuOPtion(View view)
-    {
-        Toast.makeText(this,"button clicked",Toast.LENGTH_LONG).show();
-        setInetent();//set intent to receive voice...
-
     }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public  void speeak(String mess)//code to speak input
@@ -119,16 +117,17 @@ private SpeechRecognizer mSP;
                 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 @Override
                 public void onResults(Bundle results) {
-                  ArrayList<String>result = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                  if(result!=null)
-                  processResult(result.get(0).toString());
-                  else
-                      speeak("result is null");
+                    ArrayList<String> result = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                    if(result!=null)
+                        processResult(result.get(0).toString());
+                    else
+                        speeak("result is null");
                 }
 
                 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-                private void processResult(String mytring) {
-                    input.setText(mytring);
+                private void processResult(String mytring)//code to handle commands
+                {
+
                     speeak(mytring);
                 }
 
@@ -153,25 +152,4 @@ private SpeechRecognizer mSP;
         mSP.startListening(intent);
 
     }
-
-
-
-
-    @Override
-    protected void onDestroy() {
-        if(tts!=null)
-        {
-            tts.stop();
-            tts.shutdown();
-        }
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        tts.stop();
-        tts.shutdown();
-    }
 }
-
