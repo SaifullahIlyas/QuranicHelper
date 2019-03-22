@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="wrap_content"
         android:background="@color/Green"
         android:elevation="4dp"
         xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
         style="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar">
-    <LinearLayout android:layout_width="wrap_content" android:layout_height="match_parent" android:orientation="vertical">
-        <ImageView android:layout_width="60dp" android:layout_height="match_parent" android:src="@drawable/ic_speaker" android:layout_gravity="right" android:layout_marginLeft="125dp"/>
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="match_parent" android:orientation="horizontal">
+        <ImageView android:layout_margin="2dp" android:layout_width="70dp" android:layout_height="70dp" android:src="@drawable/ic_microphone" android:id="@+id/mic" android:layout_gravity="center"/>
+        <ImageView android:layout_margin="2dp" android:layout_width="70dp" android:layout_height="70dp" android:src="@drawable/ic_speaker" android:layout_gravity="right" android:layout_marginLeft="0dp"/>
     </LinearLayout>
+
 
 </android.support.v7.widget.Toolbar>
 
