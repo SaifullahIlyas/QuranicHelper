@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -18,6 +19,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
+
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -42,17 +44,35 @@ public class Home extends AppCompatActivity {
           animation = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.blink);
           speeker = findViewById(R.id.speaker);
           speeker.startAnimation(animation);
-          intilaizeEngine();
+
 
     }
 
 protected void MenuOPtion(View view)
 {
-    //Intent intent = new Intent( this,feedbackJ.class);
-   // startActivity(intent);
-    setInetent();
-    mSP.startListening(intent);
+    Intent intent = new Intent( this,feedbackJ.class);
+   startActivity(intent);
 }
+public void listenOption(View view)
+{
+    Intent intent = new Intent( this,Listen.class);
+    startActivity(intent);
+}
+public void favoritListOption(View view)
+    {
+        Intent intent = new Intent( this,FavoriteList.class);
+        startActivity(intent);
+    }
+    public void downloadsOption(View view)
+    {
+        Intent intent = new Intent( this,Downloads.class);
+        startActivity(intent);
+    }
+    public void lastListenOption(View view)
+    {
+        Intent intent = new Intent( this,LastListen.class);
+        startActivity(intent);
+    }
 public void perepereMenu()
 {
 
@@ -112,7 +132,8 @@ public void perepereMenu()
 
                 @Override
                 public void onBufferReceived(byte[] buffer) {
-
+                if(  buffer.length>0)
+                    Toast.makeText(Home.this,"more than one voice detecd",Toast.LENGTH_LONG).show();
                 }
 
                 @Override
@@ -125,15 +146,14 @@ public void perepereMenu()
                 @Override
                 public void onError(int error) {
                     //Toast.makeText(Home.this,"Error Occur",Toast.LENGTH_LONG).show();
-                    if (error==6)
-                    speeakVoice("please Select the Right option");
-                    try {
-                        mSP.startListening(intent);
+                    if (error==6) {
+                        speeakVoice("please Select the Right option");
+                        try {
+                            mSP.startListening(intent);
+                        } catch (Exception e) {
+                            Toast.makeText(Home.this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                        }
                     }
-                  catch (Exception e)
-                  {
-                      Toast.makeText(Home.this,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
-                  }
 
                 }
 
@@ -155,18 +175,38 @@ public void perepereMenu()
                 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 private void processResult(String mytringRes1,String mytringRes2)//code to handle commands
                 {
-                    String myString;
-                    if(mytringRes1.length()>10 && mytringRes1.contains(""))
-                    {
-                        myString = mytringRes2;
-                    }
-                    else {
-                        myString = mytringRes1;
-                    }
-                    try {
+                   String myString;
+                    myString = mytringRes1;
+                    myString.toLowerCase();
+                        try {
                         {
-                            if ((myString.contains("five")|| myString.contains("5"))&&myString.length()<10) {
+                            if ((myString.contains("five")|| myString.contains("5")||myString.contains("feedback"))&&myString.length()<10) {
                                 NavigationINtent = new Intent(Home.this,feedbackJ.class) ;
+                                startActivity(NavigationINtent);
+                                flag= true;
+                            }
+                            else if((myString.contains("1")|| myString.contains("one")||myString.contains("listen"))&&myString.length()<10)
+                            {
+                                NavigationINtent = new Intent(Home.this,Listen.class) ;
+                                startActivity(NavigationINtent);
+                                flag= true;
+                            }
+                            else if((myString.contains("two")|| myString.contains("2")||myString.contains("favourite list"))&&myString.length()<10)
+                            {
+                                NavigationINtent = new Intent(Home.this,FavoriteList.class) ;
+                                startActivity(NavigationINtent);
+                                flag= true;
+                            }
+                            else if((myString.contains("three")|| myString.contains("3")||myString.contains("downloads"))&&myString.length()<10)
+                            {
+                                NavigationINtent = new Intent(Home.this,Downloads.class) ;
+                                startActivity(NavigationINtent);
+                                flag= true;
+
+                            }
+                            else if((myString.contains("four")|| myString.contains("4")||myString.contains("last listen"))&&myString.length()<10)
+                            {
+                                NavigationINtent = new Intent(Home.this,LastListen.class) ;
                                 startActivity(NavigationINtent);
                                 flag= true;
                             }
@@ -206,12 +246,13 @@ public void perepereMenu()
     {
          intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_RESULTS,2);
+        intent.putExtra(RecognizerIntent.EXTRA_RESULTS,1);
 
 
 
 
     }
+
 
     @Override
     protected void onResume() {
@@ -222,6 +263,7 @@ public void perepereMenu()
         setInetent();
         flag = false;
         mSP.startListening(intent);
+
     }
 
     @Override
@@ -230,6 +272,8 @@ public void perepereMenu()
         tts.stop();
         tts.shutdown();
         mSP.stopListening();
+        mSP.cancel();
+        mSP.destroy();
 
     }
 
@@ -239,6 +283,8 @@ public void perepereMenu()
         tts.stop();
         tts.shutdown();
         mSP.stopListening();
+        mSP.cancel();
+        mSP.destroy();
     }
 
     @Override

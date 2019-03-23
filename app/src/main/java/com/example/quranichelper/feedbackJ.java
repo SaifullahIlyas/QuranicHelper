@@ -17,11 +17,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.protobuf.Any;
 
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import static android.widget.Toast.LENGTH_LONG;
 
@@ -30,15 +29,13 @@ private TextToSpeech tts;
 private EditText input;
 Timer timer;
 private SpeechRecognizer mSP;
-
+    Intent intent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed_back );
         setSupportActionBar((Toolbar) findViewById(R.id.my_toolbar));
         input= findViewById(R.id.messageFeed);
-        intilaizeEngine();//set text to speach
-        getSpeachRecognizer();//set speach recognition
     }
     public void intilaizeEngine()//this is the code to initilize Text to Speach
     {
@@ -53,7 +50,7 @@ private SpeechRecognizer mSP;
                 }
                 else {
                     tts.setLanguage(Locale.ENGLISH);
-                   speeak("Please Record You feedBack  ");
+                   speeakVoice("Please Record You feedBack  ");
                 }
                /* if (status==TextToSpeech.SUCCESS)
                 {
@@ -69,12 +66,20 @@ private SpeechRecognizer mSP;
     }
     protected   void  menuOPtion(View view)
     {
-        Toast.makeText(this,"button clicked",Toast.LENGTH_LONG).show();
-        setInetent();//set intent to receive voice...
 
+sendFeedBack();
+    }
+    public void sendFeedBack()
+    {
+
+        Map<String, Object> dictionary = new HashMap();
+        dictionary.put("Date",new Date().toString());
+        dictionary.put("feedBack",input.getText().toString());
+        FirebaseFirestore ref = FirebaseFirestore.getInstance();
+        ref.collection("FeedBack").document("6").set(dictionary);
     }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public  void speeak(String mess)//code to speak input
+    public  void speeakVoice(String mess)//code to speak input
     {
         //String speakMeassage=input.getText().toString();
         tts.speak(mess,TextToSpeech.QUEUE_FLUSH,null,null);
@@ -111,8 +116,17 @@ private SpeechRecognizer mSP;
 
                 }
 
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 @Override
                 public void onError(int error) {
+                    if (error==6) {
+                        speeakVoice("please Select the Right option");
+                        try {
+                            mSP.startListening(intent);
+                        } catch (Exception e) {
+                            Toast.makeText(feedbackJ.this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }
 
                 }
 
@@ -123,13 +137,13 @@ private SpeechRecognizer mSP;
                   if(result!=null)
                   processResult(result.get(0).toString());
                   else
-                      speeak("result is null");
+                      speeakVoice("result is null");
                 }
 
                 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 private void processResult(String mytring) {
                     input.setText(mytring);
-                    speeak(mytring);
+                    speeakVoice(mytring);
                 }
 
                 @Override
@@ -145,26 +159,30 @@ private SpeechRecognizer mSP;
         }
 
     }
-    public void setInetent()//set intent
-    {
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_RESULTS,1);
-        mSP.startListening(intent);
-
-    }
-
 
 
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        intilaizeEngine();
+        getSpeachRecognizer();
+        setInetent();
+        mSP.startListening(intent);
+    }
+
+    @Override
     protected void onDestroy() {
+
+        super.onDestroy();
         if(tts!=null)
         {
             tts.stop();
             tts.shutdown();
         }
-        super.onDestroy();
+        mSP.stopListening();
+        mSP.cancel();
+        mSP.destroy();
     }
 
     @Override
@@ -172,6 +190,18 @@ private SpeechRecognizer mSP;
         super.onPause();
         tts.stop();
         tts.shutdown();
+        mSP.stopListening();
+        mSP.cancel();
+        mSP.destroy();
+    }
+
+    public void setInetent()//set intent
+    {
+         intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_RESULTS,1);
+
+
     }
 }
 
