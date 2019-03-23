@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -25,14 +26,22 @@ public class Home extends AppCompatActivity {
     ImageView mic,speeker;
     TextToSpeech tts;
     SpeechRecognizer mSP;
+    String spkrOutput;
+    String menuSpkr;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setSupportActionBar((Toolbar) findViewById(R.id.my_toolbar));
+        menuSpkr += "Plese Select one option from the Menu. Menu is ";
+        menuSpkr += "1.Listen  2.Favorite list   3.Downloads   4.Last LIsten  5.FeedBack  6.Help";
           animation = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.blink);
           speeker = findViewById(R.id.speaker);
           speeker.startAnimation(animation);
+          intilaizeEngine();
+          maintainSPeakerSpeed(1.0,0.5);
+          getSpeachRecognizer();
+          setInetent();
     }
 
 protected void MenuOPtion(View view)
@@ -57,22 +66,20 @@ public void perepereMenu()
                 }
                 else {
                     tts.setLanguage(Locale.ENGLISH);
-                    speeak("Please Record You feedBack  ");
+                    speeakVoice(menuSpkr);
                 }
-               /* if (status==TextToSpeech.SUCCESS)
-                {
-                    int result =tts.setLanguage(Locale.ENGLISH);
-                    if(result ==TextToSpeech.LANG_MISSING_DATA|| result== TextToSpeech.LANG_NOT_SUPPORTED)
-                    {
-                        Log.e("tts","Language is not supported");
-                    }
-                }*/
 
             }
         });
     }
+    public  void maintainSPeakerSpeed(double pitch , double spRate)//set Speed of the Engine .
+    {
+        tts.setPitch((float)pitch);
+        tts.setSpeechRate((float)spRate);
+
+    }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public  void speeak(String mess)//code to speak input
+    public  void speeakVoice(String mess)//code to speak input
     {
         //String speakMeassage=input.getText().toString();
         tts.speak(mess,TextToSpeech.QUEUE_FLUSH,null,null);
@@ -121,14 +128,15 @@ public void perepereMenu()
                     if(result!=null)
                         processResult(result.get(0).toString());
                     else
-                        speeak("result is null");
+                        speeakVoice("result is null");
                 }
 
                 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 private void processResult(String mytring)//code to handle commands
                 {
 
-                    speeak(mytring);
+                    speeakVoice(mytring);
+
                 }
 
                 @Override
@@ -144,6 +152,12 @@ public void perepereMenu()
         }
 
     }
+ public void   intilizeSpeekerOutput(String input){
+        spkrOutput += input;
+        spkrOutput+="    ";
+
+ }
+
     public void setInetent()//set intent
     {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -151,5 +165,25 @@ public void perepereMenu()
         intent.putExtra(RecognizerIntent.EXTRA_RESULTS,1);
         mSP.startListening(intent);
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        tts.stop();
+        tts.shutdown();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        tts.stop();
+        tts.shutdown();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        intilaizeEngine();
     }
 }
