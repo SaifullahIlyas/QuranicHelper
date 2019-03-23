@@ -76,7 +76,7 @@ sendFeedBack();
         dictionary.put("Date",new Date().toString());
         dictionary.put("feedBack",input.getText().toString());
         FirebaseFirestore ref = FirebaseFirestore.getInstance();
-        ref.collection("FeedBack").document("6").set(dictionary);
+        ref.collection("Feedback").document("6").set(dictionary);
     }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public  void speeakVoice(String mess)//code to speak input
