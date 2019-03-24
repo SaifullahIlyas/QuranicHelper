@@ -132,7 +132,7 @@ public void perepereMenu()
 
                 @Override
                 public void onBufferReceived(byte[] buffer) {
-                if(  buffer.length>0)
+                if(  buffer.length>1)
                     Toast.makeText(Home.this,"more than one voice detecd",Toast.LENGTH_LONG).show();
                 }
 
@@ -185,34 +185,32 @@ public void perepereMenu()
                                 startActivity(NavigationINtent);
                                 flag= true;
                             }
-                            else if((myString.contains("1")|| myString.contains("one")||myString.contains("listen"))&&myString.length()<10)
+                            if((myString.contains("1")|| myString.contains("one")||myString.contains("listen"))&&myString.length()<10)
                             {
                                 NavigationINtent = new Intent(Home.this,Listen.class) ;
                                 startActivity(NavigationINtent);
                                 flag= true;
                             }
-                            else if((myString.contains("two")|| myString.contains("2")||myString.contains("favourite list"))&&myString.length()<10)
+                            if((myString.contains("two")|| myString.contains("2")||myString.contains("favourite list"))&&myString.length()<10)
                             {
                                 NavigationINtent = new Intent(Home.this,FavoriteList.class) ;
                                 startActivity(NavigationINtent);
                                 flag= true;
                             }
-                            else if((myString.contains("three")|| myString.contains("3")||myString.contains("downloads"))&&myString.length()<10)
+                            if((myString.contains("three")|| myString.contains("3")||myString.contains("downloads"))&&myString.length()<10)
                             {
                                 NavigationINtent = new Intent(Home.this,Downloads.class) ;
                                 startActivity(NavigationINtent);
                                 flag= true;
 
                             }
-                            else if((myString.contains("four")|| myString.contains("4")||myString.contains("last listen"))&&myString.length()<10)
+                             if((myString.contains("four")|| myString.contains("4")||myString.contains("last listen"))&&myString.length()<10)
                             {
                                 NavigationINtent = new Intent(Home.this,LastListen.class) ;
                                 startActivity(NavigationINtent);
                                 flag= true;
                             }
-                            else {
-                                mSP.startListening(intent);
-                            }
+
 
                         }
                     }
@@ -220,6 +218,7 @@ public void perepereMenu()
                    {
                        Toast.makeText(Home.this,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
                    }
+                    mSP.startListening(intent);
                 }
 
 

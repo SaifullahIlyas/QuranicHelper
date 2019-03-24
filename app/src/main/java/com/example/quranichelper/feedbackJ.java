@@ -7,6 +7,7 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
@@ -17,9 +18,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.protobuf.Any;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 import static android.widget.Toast.LENGTH_LONG;
@@ -28,6 +32,7 @@ public class feedbackJ extends AppCompatActivity {
 private TextToSpeech tts;
 private EditText input;
 Timer timer;
+boolean sent =false;
 private SpeechRecognizer mSP;
     Intent intent;
     @Override
@@ -36,9 +41,11 @@ private SpeechRecognizer mSP;
         setContentView(R.layout.activity_feed_back );
         setSupportActionBar((Toolbar) findViewById(R.id.my_toolbar));
         input= findViewById(R.id.messageFeed);
+
     }
     public void intilaizeEngine()//this is the code to initilize Text to Speach
     {
+
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
@@ -76,7 +83,29 @@ sendFeedBack();
         dictionary.put("Date",new Date().toString());
         dictionary.put("feedBack",input.getText().toString());
         FirebaseFirestore ref = FirebaseFirestore.getInstance();
-        ref.collection("Feedback").document("6").set(dictionary);
+        ref.collection("Feedback").document("7").set(dictionary).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onSuccess(Void aVoid) {
+                speeakVoice("FeedBack Sent SuccessFully");
+                mSP.cancel();
+                mSP.stopListening();
+
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                speeakVoice("THere is no internet connection Availabale");
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                       mSP.startListening(intent);
+                    }
+                },3000);
+            }
+        });
     }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public  void speeakVoice(String mess)//code to speak input
@@ -119,8 +148,8 @@ sendFeedBack();
                 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 @Override
                 public void onError(int error) {
-                    if (error==6) {
-                        speeakVoice("please Select the Right option");
+                    if (error==6 && sent==false) {
+                        speeakVoice("please  select option");
                         try {
                             mSP.startListening(intent);
                         } catch (Exception e) {
@@ -143,6 +172,7 @@ sendFeedBack();
 
                 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 private void processResult(String mytring) {
+                    Double time =0.0;
                     if (!mytring.contains("yes") && mytring.length()>5)
                     {
                         input.setText(mytring);
@@ -151,11 +181,16 @@ sendFeedBack();
                     if (mytring.contains("yes")&& mytring.length()<10) {
 
                         sendFeedBack();
-                        speeakVoice("Thank you for your feedBack");
+                        speeakVoice("ok we are sending your FeedBack");
+                        mSP.stopListening();
+                        mSP.cancel();
+                        sent = true;
                     }
                     else {
-
                         speeakVoice(mytring + "yes or no" );
+                     String a[]= mytring.split(" ");
+                      time =(1.0/a.length);
+                     Toast.makeText(feedbackJ.this,time.toString(),Toast.LENGTH_LONG).show();
                     }
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -188,6 +223,7 @@ sendFeedBack();
     protected void onResume() {
         super.onResume();
         intilaizeEngine();
+        tts.setSpeechRate((float)1.0);
         getSpeachRecognizer();
         setInetent();
         new Handler().postDelayed(new Runnable() {
