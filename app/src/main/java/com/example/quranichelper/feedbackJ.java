@@ -134,16 +134,38 @@ sendFeedBack();
                 @Override
                 public void onResults(Bundle results) {
                   ArrayList<String>result = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                  if(result!=null)
-                  processResult(result.get(0).toString());
+                  if(result!=null) {
+                      processResult(result.get(0).toString());
+                  }
                   else
                       speeakVoice("result is null");
                 }
 
                 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 private void processResult(String mytring) {
-                    input.setText(mytring);
-                    speeakVoice(mytring);
+                    if (!mytring.contains("yes") && mytring.length()>5)
+                    {
+                        input.setText(mytring);
+                    }
+
+                    if (mytring.contains("yes")&& mytring.length()<10) {
+
+                        sendFeedBack();
+                        speeakVoice("Thank you for your feedBack");
+                    }
+                    else {
+
+                        speeakVoice(mytring + "yes or no" );
+                    }
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSP.startListening(intent);
+                        }
+                    },2000);
+
+
+
                 }
 
                 @Override
@@ -168,7 +190,13 @@ sendFeedBack();
         intilaizeEngine();
         getSpeachRecognizer();
         setInetent();
-        mSP.startListening(intent);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mSP.startListening(intent);
+            }
+        },5000);
+
     }
 
     @Override

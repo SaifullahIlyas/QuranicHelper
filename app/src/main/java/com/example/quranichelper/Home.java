@@ -210,6 +210,9 @@ public void perepereMenu()
                                 startActivity(NavigationINtent);
                                 flag= true;
                             }
+                            else {
+                                mSP.startListening(intent);
+                            }
 
                         }
                     }
