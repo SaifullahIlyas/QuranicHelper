@@ -17,13 +17,14 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity android:name=".FingerPrintLock">
-        </activity>
-        <activity android:name=".GoogleSignin">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".GoogleSignin">
+
         </activity>
         <activity android:name=".LastListen">
         </activity>
