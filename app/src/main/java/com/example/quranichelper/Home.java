@@ -12,7 +12,10 @@ import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -34,49 +37,106 @@ public class Home extends AppCompatActivity {
     String menuSpkr;
     Intent NavigationINtent;
     Boolean flag=false;
+    private  GestureDetector myGestureDetc;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setSupportActionBar((Toolbar) findViewById(R.id.my_toolbar));
-        menuSpkr += "Plese Select one option from the Menu. Menu is ";
-        menuSpkr += "1. Listen  2. Favorite list   3. Downloads   4.Last LIsten  5. FeedBack  6.Help";
+        menuSpkr += "You are on Home Screen";
           animation = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.blink);
           speeker = findViewById(R.id.speaker);
           speeker.startAnimation(animation);
+        findViewById(R.id.listenCard).setOnClickListener(new DoubleClickListener() {
+
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onSingleClick(View v) {
+                speeakVoice("Double Tap to listen");
+
+            }
+
+            @Override
+            public void onDoubleClick(View v) {
+                Intent intent = new Intent( Home.this,Listen.class);
+                startActivity(intent);
+
+            }
+        });
+        findViewById(R.id.favoritelistCard).setOnClickListener(new DoubleClickListener() {
+
+            @Override
+            public void onSingleClick(View v) {
+                speeakVoice("Double Tap for Favourite list");
+            }
+
+            @Override
+            public void onDoubleClick(View v) {
+                Intent intent = new Intent( Home.this,FavoriteList.class);
+                startActivity(intent);
+
+            }
+        });
+        findViewById(R.id.downloadsCard).setOnClickListener(new DoubleClickListener() {
+
+            @Override
+            public void onSingleClick(View v) {
+                speeakVoice("Double Tap for Downloads");
+
+            }
+
+            @Override
+            public void onDoubleClick(View v) {
+                Intent intent = new Intent( Home.this,Downloads.class);
+                startActivity(intent);
+
+            }
+        });
+        findViewById(R.id.lastlistenCard).setOnClickListener(new DoubleClickListener() {
+
+            @Override
+            public void onSingleClick(View v) {
+                speeakVoice("Double Tap for Last listen");
+
+            }
+
+            @Override
+            public void onDoubleClick(View v) {
+                Intent intent = new Intent( Home.this,LastListen.class);
+                startActivity(intent);
+
+            }
+        });
+        findViewById(R.id.feedbackCard).setOnClickListener(new DoubleClickListener() {
+
+            @Override
+            public void onSingleClick(View v) {
+                speeakVoice("Double Tap For feedback");
+
+            }
+
+            @Override
+            public void onDoubleClick(View v) {
+                Intent intent = new Intent( Home.this,feedbackJ.class);
+                startActivity(intent);
+            }
+        });
+        findViewById(R.id.helpCard).setOnClickListener(new DoubleClickListener() {
+
+            @Override
+            public void onSingleClick(View v) {
+                speeakVoice("Double Tap for Help");
+            }
+
+            @Override
+            public void onDoubleClick(View v) {
+
+            }
+        });
 
 
     }
 
-protected void MenuOPtion(View view)
-{
-    Intent intent = new Intent( this,feedbackJ.class);
-   startActivity(intent);
-}
-public void listenOption(View view)
-{
-    Intent intent = new Intent( this,Listen.class);
-    startActivity(intent);
-}
-public void favoritListOption(View view)
-    {
-        Intent intent = new Intent( this,FavoriteList.class);
-        startActivity(intent);
-    }
-    public void downloadsOption(View view)
-    {
-        Intent intent = new Intent( this,Downloads.class);
-        startActivity(intent);
-    }
-    public void lastListenOption(View view)
-    {
-        Intent intent = new Intent( this,LastListen.class);
-        startActivity(intent);
-    }
-public void perepereMenu()
-{
-
-}
     public void intilaizeEngine()//this is the code to initilize Text to Speach
     {
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
@@ -300,4 +360,26 @@ public void perepereMenu()
         super.onRestart();
         mSP.startListening(intent);
     }
+    public abstract class DoubleClickListener implements View.OnClickListener {
+
+        private static final long DOUBLE_CLICK_TIME_DELTA = 300;//milliseconds
+
+        long lastClickTime = 0;
+
+        @Override
+        public void onClick(View v) {
+            long clickTime = System.currentTimeMillis();
+            if (clickTime - lastClickTime < DOUBLE_CLICK_TIME_DELTA){
+                onDoubleClick(v);
+            } else {
+                onSingleClick(v);
+            }
+            lastClickTime = clickTime;
+        }
+
+        public abstract void onSingleClick(View v);
+        public abstract void onDoubleClick(View v);
+    }
+
+
 }

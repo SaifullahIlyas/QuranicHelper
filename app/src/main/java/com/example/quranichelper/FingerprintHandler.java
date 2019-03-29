@@ -7,6 +7,7 @@ import android.hardware.fingerprint.FingerprintManager;
 import android.media.Image;
 import android.os.Build;
 import android.os.CancellationSignal;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.content.ContextCompat;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,6 +16,8 @@ import android.widget.TextView;
 public class FingerprintHandler extends FingerprintManager.AuthenticationCallback {
 
     private Context context;
+    //FingerPrintLock lock;
+    private static String setMesssage;
 
     public FingerprintHandler(Context context){
 
@@ -26,6 +29,8 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
 
         CancellationSignal cancellationSignal = new CancellationSignal();
         fingerprintManager.authenticate(cryptoObject, cancellationSignal, 0, this, null);
+        setMesssage = "Authenticating your finger print";
+
 
     }
 
@@ -33,6 +38,7 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
     public void onAuthenticationError(int errorCode, CharSequence errString) {
 
         this.update("There was an Auth Error. " + errString, false);
+        setMesssage = "There was an Auth Error. " + errString;
 
     }
 
@@ -40,6 +46,7 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
     public void onAuthenticationFailed() {
 
         this.update("Auth Failed. ", false);
+        setMesssage =  "Auth Failed. ";
 
     }
 
@@ -47,6 +54,7 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
     public void onAuthenticationHelp(int helpCode, CharSequence helpString) {
 
         this.update("Error: " + helpString, false);
+        setMesssage = "Error: ";
 
     }
 
@@ -54,6 +62,7 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
     public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
 
         this.update("You can now access the app.", true);
+        setMesssage = "You can now access the app.";
 
     }
 
@@ -61,6 +70,7 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
 
         TextView paraLabel = (TextView) ((Activity)context).findViewById(R.id.paraLabel);
         ImageView imageView = (ImageView) ((Activity)context).findViewById(R.id.fingerprintImage);
+
 
         paraLabel.setText(s);
 
@@ -75,5 +85,14 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
 
         }
 
+    }
+    public  void setSpeacInput(String str)
+    {
+        setMesssage = str;
+
+    }
+    public static String getMessage()
+    {
+        return  setMesssage;
     }
 }

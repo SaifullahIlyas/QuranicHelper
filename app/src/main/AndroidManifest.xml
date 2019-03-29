@@ -5,10 +5,11 @@
 
     <dist:module dist:instant="true"/>
 
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" android:maxSdkVersion="22"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.INTERNET"/>
-
     <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
+
     <application
             android:allowBackup="true"
             android:icon="@drawable/ic_quran"
@@ -16,14 +17,9 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".FingerPrintLock">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+        <activity android:name=".GoogleAccount">
         </activity>
-        <activity android:name=".GoogleSignin">
+        <activity android:name=".FingerPrintLock">
 
         </activity>
         <activity android:name=".LastListen">
@@ -33,10 +29,16 @@
         <activity android:name=".FavoriteList">
         </activity>
         <activity android:name=".Listen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
         <activity android:name=".feedbackJ">
         </activity>
         <activity android:name=".Home">
+
         </activity>
     </application>
 

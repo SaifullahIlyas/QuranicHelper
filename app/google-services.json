@@ -15,14 +15,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "297192014169-l6jpu1bicvlq5f39l131lu5b6bpki34s.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.quranichelper",
-            "certificate_hash": "ba5954230171e91e0962aa0eab5ded7d06e5d896"
-          }
-        },
-        {
           "client_id": "297192014169-o6gafck35oj983mcl63p81q9jasj5eif.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -37,13 +29,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "297192014169-o6gafck35oj983mcl63p81q9jasj5eif.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2

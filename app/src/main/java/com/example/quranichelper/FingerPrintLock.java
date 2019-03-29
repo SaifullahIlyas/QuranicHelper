@@ -3,17 +3,26 @@ package com.example.quranichelper;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.KeyguardManager;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
+import android.os.Handler;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
+import android.speech.tts.TextToSpeech;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -22,8 +31,12 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.security.*;
 import java.security.cert.CertificateException;
+import java.util.Locale;
+
 
 public class FingerPrintLock extends AppCompatActivity {
+   public TextToSpeech tts;
+    private  GestureDetector myGestureDetc;
 
     private TextView mHeadingLabel;
     private ImageView mFingerprintImage;
@@ -35,6 +48,7 @@ public class FingerPrintLock extends AppCompatActivity {
     private KeyStore keyStore;
     private Cipher cipher;
     private String KEY_NAME = "AndroidKey";
+    GstureDetectorClass gsClassObject = new GstureDetectorClass();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +58,8 @@ public class FingerPrintLock extends AppCompatActivity {
         mHeadingLabel = (TextView) findViewById(R.id.headingLabel);
         mFingerprintImage = (ImageView) findViewById(R.id.fingerprintImage);
         mParaLabel = (TextView) findViewById(R.id.paraLabel);
+        GstureDetectorClass gsClsObject = new GstureDetectorClass();
+        myGestureDetc = new GestureDetector(FingerPrintLock.this,gsClsObject);
 
         // Check 1: Android version should be greater or equal to Marshmallow
         // Check 2: Device has Fingerprint Scanner
@@ -51,6 +67,11 @@ public class FingerPrintLock extends AppCompatActivity {
         // Check 4: Lock screen is secured with atleast 1 type of lock
         // Check 5: Atleast 1 Fingerprint is registered
 
+
+
+    }
+    protected void setUpfingerPrint()
+    {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
             fingerprintManager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
@@ -58,23 +79,28 @@ public class FingerPrintLock extends AppCompatActivity {
 
             if(!fingerprintManager.isHardwareDetected()){
 
-                mParaLabel.setText("Fingerprint Scanner not detected in Device");
+                mParaLabel.setText("Fingerprint Sensor not detected in Device");
+                speeakVoice("Fingerprint Sensor not detected in Device");
 
             } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED){
 
                 mParaLabel.setText("Permission not granted to use Fingerprint Scanner");
+                speeakVoice("Permission not granted to use Fingerprint Scanner");
 
             } else if (!keyguardManager.isKeyguardSecure()){
 
-                mParaLabel.setText("Add Lock to your Phone in Settings");
+                mParaLabel.setText("Add Atleast one Lock to your Phone in Settings");
+                speeakVoice("Add  Lock to your Phone in Settings");
 
             } else if (!fingerprintManager.hasEnrolledFingerprints()){
 
                 mParaLabel.setText("You should add atleast 1 Fingerprint to use this Feature");
+                speeakVoice("You should Enroll atleast 1 Fingerprint to use this Feature");
 
             } else {
 
                 mParaLabel.setText("Place your Finger on Scanner to Access the App.");
+                speeakVoice("Place your Finger on Scanner to Access the App.");
 
                 generateKey();
 
@@ -83,12 +109,13 @@ public class FingerPrintLock extends AppCompatActivity {
                     FingerprintManager.CryptoObject cryptoObject = new FingerprintManager.CryptoObject(cipher);
                     FingerprintHandler fingerprintHandler = new FingerprintHandler(this);
                     fingerprintHandler.startAuth(fingerprintManager, cryptoObject);
+                    String receiveput = FingerprintHandler.getMessage();
+                    Toast.makeText(this,receiveput,Toast.LENGTH_LONG).show();
 
                 }
             }
 
         }
-
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -148,4 +175,119 @@ public class FingerPrintLock extends AppCompatActivity {
         }
 
     }
+    public void intilaizeEngine()//this is the code to initilize Text to Speach
+    {
+
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onInit(int status) {
+
+                if(tts.getEngines().size()==0)
+                {
+
+                }
+                else {
+                    tts.setLanguage(Locale.ENGLISH);
+                    speeakVoice("If your device have fingerprint then sign in using fingerprint otherwise double Tap on Screen to SignUp using Tap System  ");
+                }
+               /* if (status==TextToSpeech.SUCCESS)
+                {
+                    int result =tts.setLanguage(Locale.ENGLISH);
+                    if(result ==TextToSpeech.LANG_MISSING_DATA|| result== TextToSpeech.LANG_NOT_SUPPORTED)
+                    {
+                        Log.e("tts","Language is not supported");
+                    }
+                }*/
+
+            }
+        });
+    }
+    public  void speeakVoice(String mess)//code to speak input
+    {
+        //String speakMeassage=input.getText().toString();
+        tts.speak(mess,TextToSpeech.QUEUE_FLUSH,null,null);
+
+    }
+    public void  setSpeedrate(double d)
+    {
+        tts.setSpeechRate((float) d);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        intilaizeEngine();
+        setSpeedrate(0.7);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setUpfingerPrint();
+            }
+        },10000);
+    }
+    class GstureDetectorClass implements GestureDetector.OnGestureListener,GestureDetector.OnDoubleTapListener{
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            Intent intent = new Intent(FingerPrintLock.this,GoogleAccount.class);
+            startActivity(intent);
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent e) {
+            return false;
+        }
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return false;
+        }
+
+        @Override
+        public void onShowPress(MotionEvent e) {
+
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            return false;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            return false;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        myGestureDetc.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        tts.shutdown();
+        tts.stop();
+    }
 }
+
+
