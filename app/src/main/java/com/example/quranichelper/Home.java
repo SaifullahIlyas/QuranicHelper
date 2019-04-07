@@ -58,21 +58,7 @@ public class Home extends AppCompatActivity {
 
             @Override
             public void onDoubleClick(View v) {
-                Intent intent = new Intent( Home.this,Listen.class);
-                startActivity(intent);
-
-            }
-        });
-        findViewById(R.id.favoritelistCard).setOnClickListener(new DoubleClickListener() {
-
-            @Override
-            public void onSingleClick(View v) {
-                speeakVoice("Double Tap for Favourite list");
-            }
-
-            @Override
-            public void onDoubleClick(View v) {
-                Intent intent = new Intent( Home.this,FavoriteList.class);
+                Intent intent = new Intent( Home.this,SurahList.class);
                 startActivity(intent);
 
             }
@@ -81,13 +67,13 @@ public class Home extends AppCompatActivity {
 
             @Override
             public void onSingleClick(View v) {
-                speeakVoice("Double Tap for Downloads");
+                speeakVoice("Double Tap for Rate Application");
 
             }
 
             @Override
             public void onDoubleClick(View v) {
-                Intent intent = new Intent( Home.this,Downloads.class);
+                Intent intent = new Intent( Home.this,Rate.class);
                 startActivity(intent);
 
             }

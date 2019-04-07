@@ -75,6 +75,7 @@ private SpeechRecognizer mSP;
     {
 
 sendFeedBack();
+input.setText("");
     }
     public void sendFeedBack()
     {

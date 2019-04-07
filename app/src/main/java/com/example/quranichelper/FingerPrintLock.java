@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
@@ -36,6 +37,9 @@ import java.util.Locale;
 
 public class FingerPrintLock extends AppCompatActivity {
    public TextToSpeech tts;
+   TextView view;
+    CountDownTimer timer;
+   String previousText,newText;
     private  GestureDetector myGestureDetc;
 
     private TextView mHeadingLabel;
@@ -60,6 +64,18 @@ public class FingerPrintLock extends AppCompatActivity {
         mParaLabel = (TextView) findViewById(R.id.paraLabel);
         GstureDetectorClass gsClsObject = new GstureDetectorClass();
         myGestureDetc = new GestureDetector(FingerPrintLock.this,gsClsObject);
+       timer = new CountDownTimer(100000,1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+              handleTimer();
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        }.start();
+
 
         // Check 1: Android version should be greater or equal to Marshmallow
         // Check 2: Device has Fingerprint Scanner
@@ -69,6 +85,16 @@ public class FingerPrintLock extends AppCompatActivity {
 
 
 
+    }
+    public  void handleTimer()
+    {
+     if(mParaLabel.getText()=="Authenticated Successfully!!!")
+     {
+         Intent intent = new Intent(this,GoogleAccount.class);
+         startActivity(intent);
+         finish();
+         timer.cancel();
+     }
     }
     protected void setUpfingerPrint()
     {
@@ -81,6 +107,13 @@ public class FingerPrintLock extends AppCompatActivity {
 
                 mParaLabel.setText("Fingerprint Sensor not detected in Device");
                 speeakVoice("Fingerprint Sensor not detected in Device");
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(FingerPrintLock.this,GoogleAccount.class);
+                        startActivity(intent);
+                    }
+                },3000);
 
             } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED){
 
@@ -104,13 +137,11 @@ public class FingerPrintLock extends AppCompatActivity {
 
                 generateKey();
 
-                if (cipherInit()){
+                if (cipherInit()){//call handler for authenticaton
 
                     FingerprintManager.CryptoObject cryptoObject = new FingerprintManager.CryptoObject(cipher);
                     FingerprintHandler fingerprintHandler = new FingerprintHandler(this);
                     fingerprintHandler.startAuth(fingerprintManager, cryptoObject);
-                    String receiveput = FingerprintHandler.getMessage();
-                    Toast.makeText(this,receiveput,Toast.LENGTH_LONG).show();
 
                 }
             }
@@ -189,7 +220,7 @@ public class FingerPrintLock extends AppCompatActivity {
                 }
                 else {
                     tts.setLanguage(Locale.ENGLISH);
-                    speeakVoice("If your device have fingerprint then sign in using fingerprint otherwise double Tap on Screen to SignUp using Tap System  ");
+                    speeakVoice("Finger print Authentication  ");
                 }
                /* if (status==TextToSpeech.SUCCESS)
                 {
@@ -203,6 +234,7 @@ public class FingerPrintLock extends AppCompatActivity {
             }
         });
     }
+
     public  void speeakVoice(String mess)//code to speak input
     {
         //String speakMeassage=input.getText().toString();
@@ -224,7 +256,7 @@ public class FingerPrintLock extends AppCompatActivity {
             public void run() {
                 setUpfingerPrint();
             }
-        },10000);
+        },5000);
     }
     class GstureDetectorClass implements GestureDetector.OnGestureListener,GestureDetector.OnDoubleTapListener{
 

@@ -1,6 +1,7 @@
 package com.example.quranichelper;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -38,6 +39,8 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
     ProgressBar bar;
     boolean setprogreeses = false;
     CountDownTimer progressTimer;
+    Intent intent = getIntent();
+    String s = intent.getStringExtra("surahname");
 
     int i = 0;
     @RequiresApi(api = Build.VERSION_CODES.O)

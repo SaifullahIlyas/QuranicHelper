@@ -1,3 +1,44 @@
 <resources>
     <string name="app_name">Quranic Helper</string>
+    <string-array name="suraharray">
+        <item>An-Naba</item>
+        <item>An-Naziat</item>
+        <item>Abasa</item>
+        <item>At-Takwir</item>
+        <item>Al-Infitar</item>
+        <item>Al-Mutaffifin</item>
+        <item>Al-Inshiqaq</item>
+        <item>Al-Burooj</item>
+        <item>At-Tariq</item>
+        <item>Al-Ala</item>
+        <item>Al-Ghashiya</item>
+        <item>Al-Fajr</item>
+        <item>Al-Balad</item>
+        <item>Ash-Shams</item>
+        <item>Al-Lail</item>
+        <item>Ad-Dhuha</item>
+        <item>Al-Inshirah</item>
+        <item>At-Tin</item>
+        <item>Al-Alaq</item>
+        <item>Al-Qadr</item>
+        <item>Al-Bayyina</item>
+        <item>Az-Zalzala</item>
+        <item>Al-Adiyat</item>
+        <item>Al-Qaria</item>
+        <item>At-Takathur</item>
+        <item>Al-Asr</item>
+        <item>Al-Humaza</item>
+        <item>Al-Fil</item>
+        <item>Quraysh</item>
+        <item>Al-Maun</item>
+        <item>Al-Kawthar</item>
+        <item>Al-Kafirun</item>
+        <item>An-Nasr</item>
+        <item>Al-Masadd</item>
+        <item>Al-Ikhlas</item>
+        <item>Al-Falaq</item>
+        <item>Al-Nas</item>
+
+
+    </string-array>
 </resources>

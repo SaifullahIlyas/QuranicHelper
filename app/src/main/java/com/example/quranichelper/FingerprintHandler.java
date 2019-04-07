@@ -3,10 +3,13 @@ package com.example.quranichelper;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.fingerprint.FingerprintManager;
 import android.media.Image;
 import android.os.Build;
 import android.os.CancellationSignal;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.content.ContextCompat;
 import android.widget.ImageView;
@@ -18,6 +21,7 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
     private Context context;
     //FingerPrintLock lock;
     private static String setMesssage;
+
 
     public FingerprintHandler(Context context){
 
@@ -61,8 +65,8 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
     @Override
     public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
 
-        this.update("You can now access the app.", true);
-        setMesssage = "You can now access the app.";
+        this.update("Authenticated Successfully!!!", true);
+
 
     }
 
@@ -70,7 +74,7 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
 
         TextView paraLabel = (TextView) ((Activity)context).findViewById(R.id.paraLabel);
         ImageView imageView = (ImageView) ((Activity)context).findViewById(R.id.fingerprintImage);
-
+        FingerPrintLock lock = new FingerPrintLock();
 
         paraLabel.setText(s);
 
@@ -95,4 +99,5 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
     {
         return  setMesssage;
     }
+
 }
