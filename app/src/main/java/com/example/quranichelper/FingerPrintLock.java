@@ -69,7 +69,6 @@ public class FingerPrintLock extends AppCompatActivity {
             public void onTick(long millisUntilFinished) {
               handleTimer();
             }
-
             @Override
             public void onFinish() {
 
@@ -90,7 +89,7 @@ public class FingerPrintLock extends AppCompatActivity {
     {
      if(mParaLabel.getText()=="Authenticated Successfully!!!")
      {
-         Intent intent = new Intent(this,GoogleAccount.class);
+         Intent intent = new Intent(this,Home.class);
          startActivity(intent);
          finish();
          timer.cancel();

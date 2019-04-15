@@ -7,6 +7,10 @@
         xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
         style="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar">
 
+    <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent">
+        <Switch android:layout_width="match_parent" android:id="@+id/surahSwitch" android:text="Surah" android:textSize="30sp"   android:layout_height="50dp"/>
+    </RelativeLayout>
+
 
 </android.support.v7.widget.Toolbar>
 

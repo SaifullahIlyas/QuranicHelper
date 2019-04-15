@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -34,6 +35,7 @@ private EditText input;
 Timer timer;
 boolean sent =false;
 private SpeechRecognizer mSP;
+LinearLayout feedBackRecord;
     Intent intent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,34 @@ private SpeechRecognizer mSP;
         setContentView(R.layout.activity_feed_back );
         setSupportActionBar((Toolbar) findViewById(R.id.my_toolbar));
         input= findViewById(R.id.messageFeed);
+        feedBackRecord = findViewById(R.id.feedBackRecord);
+        feedBackRecord.setLongClickable(true);
+        feedBackRecord.setOnClickListener(new DoubleClickListener() {
+            @Override
+            public void onSingleClick(View v) {
+
+            }
+
+            @Override
+            public void onDoubleClick(View v) {
+                speeakVoice("ok we are Sending your feedBack");
+              sendFeedBack();
+            }
+        });
+        feedBackRecord.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                speeakVoice("Record feedback");
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSP.startListening(intent);
+                    }
+                },500);
+                return  true;
+            }
+        });
 
     }
     public void intilaizeEngine()//this is the code to initilize Text to Speach
@@ -57,7 +87,7 @@ private SpeechRecognizer mSP;
                 }
                 else {
                     tts.setLanguage(Locale.ENGLISH);
-                   speeakVoice("Please Record You feedBack  ");
+                   speeakVoice("Hold on Screen to record feedBack  ");
                 }
                /* if (status==TextToSpeech.SUCCESS)
                 {
@@ -149,14 +179,7 @@ input.setText("");
                 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 @Override
                 public void onError(int error) {
-                    if (error==6 && sent==false) {
-                        speeakVoice("please  select option");
-                        try {
-                            mSP.startListening(intent);
-                        } catch (Exception e) {
-                            Toast.makeText(feedbackJ.this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    }
+
 
                 }
 
@@ -174,32 +197,9 @@ input.setText("");
                 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 private void processResult(String mytring) {
                     Double time =0.0;
-                    if (!mytring.contains("yes") && mytring.length()>5)
-                    {
-                        input.setText(mytring);
-                    }
+                    input.setText(mytring);
 
-                    if (mytring.contains("yes")&& mytring.length()<10) {
-
-                        sendFeedBack();
-                        speeakVoice("ok we are sending your FeedBack");
-                        mSP.stopListening();
-                        mSP.cancel();
-                        sent = true;
-                    }
-                    else {
-                        speeakVoice(mytring + "yes or no" );
-                     String a[]= mytring.split(" ");
-                      time =(1.0/a.length);
-                     Toast.makeText(feedbackJ.this,time.toString(),Toast.LENGTH_LONG).show();
-                    }
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mSP.startListening(intent);
-                        }
-                    },2000);
-
+                        speeakVoice("Double Tap on Screen To send Your feedback");
 
 
                 }
@@ -227,12 +227,7 @@ input.setText("");
         tts.setSpeechRate((float)1.0);
         getSpeachRecognizer();
         setInetent();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mSP.startListening(intent);
-            }
-        },5000);
+
 
     }
 
@@ -268,5 +263,26 @@ input.setText("");
 
 
     }
+    public abstract class DoubleClickListener implements View.OnClickListener {
+
+        private static final long DOUBLE_CLICK_TIME_DELTA = 300;//milliseconds
+
+        long lastClickTime = 0;
+
+        @Override
+        public void onClick(View v) {
+            long clickTime = System.currentTimeMillis();
+            if (clickTime - lastClickTime < DOUBLE_CLICK_TIME_DELTA){
+                onDoubleClick(v);
+            } else {
+                onSingleClick(v);
+            }
+            lastClickTime = clickTime;
+        }
+
+        public abstract void onSingleClick(View v);
+        public abstract void onDoubleClick(View v);
+    }
+
 }
 

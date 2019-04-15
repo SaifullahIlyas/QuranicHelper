@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class customSurahViewAdapter  implements ListAdapter {
+public class customSurahViewAdapter  extends BaseAdapter {
     MediaPlayer player ;
     Context context;
     ArrayList<datalistdetail> list;
@@ -34,24 +34,13 @@ public class customSurahViewAdapter  implements ListAdapter {
         list = l;
     }
 
-    @Override
-    public boolean areAllItemsEnabled() {
-        return false;
-    }
-
+public  void resetAdapter(ArrayList<datalistdetail> datalistdetails)
+{
+    this.list =  datalistdetails;
+}
     @Override
     public boolean isEnabled(int position) {
-        return false;
-    }
-
-    @Override
-    public void registerDataSetObserver(DataSetObserver observer) {
-
-    }
-
-    @Override
-    public void unregisterDataSetObserver(DataSetObserver observer) {
-
+        return super.isEnabled(position);
     }
 
     @Override
@@ -70,12 +59,7 @@ public class customSurahViewAdapter  implements ListAdapter {
     }
 
     @Override
-    public boolean hasStableIds() {
-        return false;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, final ViewGroup parent) {
         final datalistdetail detail=list.get(position);
 
             LayoutInflater layoutInflater = LayoutInflater.from(context);
@@ -90,29 +74,25 @@ public class customSurahViewAdapter  implements ListAdapter {
             imag2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(context,Listen.class);
-                    intent.putExtra("surahname",detail.getName());
+                    ((ListView)parent).performItemClick(v,position,0);
+                }
+            });
+
+            /*imag2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                  Intent intent = new Intent(context,Listen.class);
+                    intent.putExtra("surahname",detail.getName().toString());
                 context.startActivity(intent);
 
                 }
-            });
+            });*/
 
 
         return convertView;
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        return 0;
-    }
 
-    @Override
-    public int getViewTypeCount() {
-        return list.size();
-    }
 
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
+
 }

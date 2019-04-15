@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.support.annotation.RequiresApi;
@@ -15,12 +16,14 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.Switch;
-import android.widget.Toast;
+import android.widget.*;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -31,7 +34,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Listen extends AppCompatActivity implements GestureDetector.OnGestureListener,GestureDetector.OnDoubleTapListener {
-    ImageView playBtn, pauseBtn, StopBtn, downloadBtn;
+    ImageView playBtn, pauseBtn, StopBtn;
     MediaPlayer player;
     boolean playHandler=false;
     float intialpoint,finalPoint;
@@ -39,10 +42,11 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
     ProgressBar bar;
     boolean setprogreeses = false;
     CountDownTimer progressTimer;
-    Intent intent = getIntent();
-    String s = intent.getStringExtra("surahname");
+    String s;
+    static  int volume = 0;
 
     int i = 0;
+    String status;
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +56,13 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
         playBtn = findViewById(R.id.playImag);
         pauseBtn = findViewById(R.id.pauseImg);
         StopBtn = findViewById(R.id.stopImg);
-        downloadBtn = findViewById(R.id.downloadImg);
-        setPlayerDataSource();
+        Intent intent = getIntent();
+        Bundle extra = intent.getExtras();
+        s = extra.getString("surahname");
+        status = extra.getString("switch");
+        Log.d("Status is",status);
+        Log.d("iput",s);
+        setPlayerDataSource(s,status);
         gestureDetector = new GestureDetector(this);
         bar = findViewById(R.id.songProgrsess);
         bar.setProgress(100);
@@ -79,7 +88,7 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
             public void onClick(View v) {
                 pauseBtn.setEnabled(true);
                 if(!playHandler)
-                setPlayerDataSource();
+                setPlayerDataSource(s,status);
                 player.start();
                 playBtn.setEnabled(false);
                 bar.setProgress((player.getDuration()));
@@ -100,27 +109,62 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
                 stopPlayer();
             }
         });
-        downloadBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setProgreess();
-            }
-        });
 
     }
 
-    public void setPlayerDataSource()
+    public void setPlayerDataSource(String s,String status)
     {
 
         try {
             player = new MediaPlayer();
             player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            player.setDataSource("https://firebasestorage.googleapis.com/v0/b/fir-b9532.appspot.com/o/songs%2Fsong1.mp3?alt=media&token=a4424b28-93c3-4a0c-a6b9-9136dcf63335");
-            player.prepare();
-        } catch (Exception e) {
+            final FirebaseStorage storage = FirebaseStorage.getInstance();
+
+            FirebaseFirestore fs;
+                fs = FirebaseFirestore.getInstance();
+            DocumentReference ref = fs.collection("parah").document(s);
+            if(status=="OFF")
+                    ref = fs.collection("parah").document(s);
+            else if(status=="ON") {
+                ref = fs.collection("surah").document(s);
+            }
+                ref.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        StorageReference stgRef = storage.getReference().child(documentSnapshot.getString("storageRef"));
+                        Log.d("ref",stgRef.getDownloadUrl().toString());
+                        stgRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                try {
+                                    player.setDataSource(Listen.this,uri);
+                                    Log.d("dataSource",uri.toString());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                    @Override
+                                    public void onPrepared(MediaPlayer mp) {
+                                        mp.start();
+                                    }
+                                });
+                                player.prepareAsync();
+
+                            }
+                        });
+
+                    }
+                });
+
+            } catch (Exception e) {
+                Log.d("Exception", e.getLocalizedMessage());
+            }
+            //player.setDataSource("https://firebasestorage.googleapis.com/v0/b/fir-b9532.appspot.com/o/songs%2Fsong1.mp3?alt=media&token=a4424b28-93c3-4a0c-a6b9-9136dcf63335");
+           // player.prepare();
+        }// catch (Exception e) {
             // TODO: handle exception
-        }
-    }
+       // }
+   // }
     public void Pause()
     {
         if(player.isPlaying()) {
@@ -181,20 +225,40 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
         {
             if(swipey>0)
             {
-                download();
+                decreseVolume();
             }
             else
             {
-                //this is nothti
+                 increaseVolume();
             }
         }
         return false;
     }
 
-    private void download() {
-        Log.d("mp3 download"," Download");
-    }
+    private void decreseVolume() {
 
+            AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+            int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            float percent = 0.1f;
+            int tenVolume = (int) (maxVolume * percent);
+            volume=currentVolume-tenVolume;
+            if(volume>=0)
+            audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+            volume=0;
+        }
+        void increaseVolume()
+        {
+            AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+            int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            float percent = 0.1f;
+            int tenVolume = (int) (maxVolume * percent);
+            volume=currentVolume+tenVolume;
+            if(volume<=100)
+                audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+            volume=0;
+        }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         gestureDetector.onTouchEvent(event);
@@ -224,29 +288,36 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
     public void setProgreess()
     {
         setColor();
-        if( player !=null) {
-            int curretposition = player.getCurrentPosition();
-            int total = player.getDuration();
-            int onePercent = total / 100;
-            int remainig = total - curretposition;
-            int used = total - remainig;
-            int progress = used / onePercent;
-            if (player.isPlaying()) {
-                setprogreeses = true;
-                if(curretposition==total)
-                bar.setProgress(100);
-                bar.setProgress(progress);
-                //calculateTime();
-
-            }
-            else if(!player.isPlaying() && setprogreeses)
-            {
-                if(curretposition==total)
-                    bar.setProgress(100);
-                bar.setProgress(progress);
-            }
+        try {
+            if( player !=null) {
+                int curretposition = player.getCurrentPosition();
+                int total = player.getDuration();
+                int onePercent = total / 100;
+                int remainig = total - curretposition;
+                int used = total - remainig;
+                final int progress = used / onePercent;
+                if (player.isPlaying()) {
+                    setprogreeses = true;
+                    if(curretposition==total)
+                        bar.setProgress(100);
+                    bar.setProgress(progress);
 
 
+                }
+                else if(!player.isPlaying() && setprogreeses)
+                {
+                    if(curretposition==total)
+                        bar.setProgress(100);
+                    bar.setProgress(progress);
+                }
+        }
+
+
+
+        }
+        catch (Exception e)
+        {
+            Log.d("Error in progress",e.getLocalizedMessage());
         }
     }
     public void switchBetweenStates()
@@ -301,4 +372,58 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
         else if (!player.isPlaying() && bar.getProgress()==100)
             bar.setProgressTintList(ColorStateList.valueOf(Color.WHITE));
     }
+    public  void playerUrl(String filename)//set player url
+    {
+        final FirebaseStorage storage = FirebaseStorage.getInstance();
+
+        FirebaseFirestore fs;
+        try {
+            fs = FirebaseFirestore.getInstance();
+            DocumentReference ref = fs.collection("parah30").document(filename);
+            ref.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    StorageReference stgRef = storage.getReference().child(documentSnapshot.getString("storageRef"));
+                    Log.d("ref",stgRef.getDownloadUrl().toString());
+                    stgRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            try {
+                                player.setDataSource(Listen.this,uri);
+                                Log.d("dataSource",uri.toString());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                @Override
+                                public void onPrepared(MediaPlayer mp) {
+                                    mp.start();
+                                }
+                            });
+                            player.prepareAsync();
+                        }
+                    });
+
+                }
+            });
+
+        } catch (Exception e) {
+            Log.d("Exception", e.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        player.stop();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+
 }

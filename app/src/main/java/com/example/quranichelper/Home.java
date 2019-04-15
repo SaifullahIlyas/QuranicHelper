@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -34,6 +35,7 @@ public class Home extends AppCompatActivity {
     TextToSpeech tts;
     SpeechRecognizer mSP;
     String spkrOutput;
+    LinearLayout linearLayout;
     String menuSpkr;
     Intent NavigationINtent;
     Boolean flag=false;
@@ -43,10 +45,10 @@ public class Home extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setSupportActionBar((Toolbar) findViewById(R.id.my_toolbar));
+        linearLayout  = findViewById(R.id.mainHomeLayout);
+
         menuSpkr += "You are on Home Screen";
           animation = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.blink);
-          speeker = findViewById(R.id.speaker);
-          speeker.startAnimation(animation);
         findViewById(R.id.listenCard).setOnClickListener(new DoubleClickListener() {
 
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -121,6 +123,11 @@ public class Home extends AppCompatActivity {
         });
 
 
+    }
+    void calculatedistance(float a ,float b) {
+        ArrayList<View> allButtons;
+        allButtons = ((LinearLayout) findViewById(R.id.mainHomeLayout)).getTouchables();
+        Toast.makeText(Home.this,allButtons.size(),Toast.LENGTH_LONG).show();
     }
 
     public void intilaizeEngine()//this is the code to initilize Text to Speach

@@ -11,30 +11,30 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
             android:allowBackup="true"
-            android:icon="@drawable/ic_quran"
+            android:icon="@mipmap/ic_quranimg"
             android:label="@string/app_name"
-            android:roundIcon="@mipmap/ic_launcher_round"
+            android:roundIcon="@mipmap/ic_quranimg"
             android:supportsRtl="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity android:name=".NetworError">
+        </activity>
         <activity android:name=".Rate">
-
         </activity>
         <activity android:name=".SplashScreen">
-
-        </activity>
-        <activity android:name=".SurahList">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
+                <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
-                <action android:name="android.intent.action.SEARCH" />
-
             </intent-filter>
-            <meta-data android:name="android.app.searchable"
-                       android:resource="@xml/searchable" />
+        </activity>
+        <activity
+                android:name=".SurahList"
+                android:theme="@style/Theme.AppCompat.NoActionBar">
         </activity>
         <activity android:name=".GoogleAccount">
         </activity>
