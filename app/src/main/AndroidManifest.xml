@@ -6,8 +6,7 @@
     <dist:module dist:instant="true"/>
 
     <uses-permission
-            android:name="android.permission.GET_ACCOUNTS"
-            android:maxSdkVersion="22"/>
+            android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
@@ -31,12 +30,11 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
         </activity>
         <activity
                 android:name=".SurahList"
                 android:theme="@style/Theme.AppCompat.NoActionBar">
-        </activity>
-        <activity android:name=".GoogleAccount">
         </activity>
         <activity android:name=".FingerPrintLock">
         </activity>
@@ -51,6 +49,8 @@
         <activity android:name=".feedbackJ">
         </activity>
         <activity android:name=".Home">
+
+
 
         </activity>
     </application>

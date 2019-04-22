@@ -9,6 +9,11 @@
     <EditText android:textColor="@color/red" android:id="@+id/messageFeed" android:hint="FeedBack Message" android:layout_width="match_parent" android:layout_height="match_parent"/>
     <Button android:layout_width="100dp" android:background="@color/black" android:textColor="@color/white" android:onClick="menuOPtion" android:layout_height="wrap_content" android:text="Send" android:textSize="30sp" android:textAllCaps="false" android:layout_marginTop="100dp" android:layout_gravity="center"/>
 </LinearLayout>
+    <LinearLayout android:gravity="bottom" android:weightSum="2" android:layout_width="match_parent" android:layout_height="match_parent">
+     <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+         <ImageView android:layout_width="100dp" android:layout_marginRight="50dp"  android:layout_height="100dp" android:src="@drawable/ic_microphone" android:layout_alignParentRight="true" android:layout_marginBottom="20dp" android:layout_gravity="bottom"/>
+     </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>
 

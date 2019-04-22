@@ -23,6 +23,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.Toast;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 
 import java.util.ArrayList;
@@ -90,8 +93,12 @@ public class Home extends AppCompatActivity {
 
             @Override
             public void onDoubleClick(View v) {
-                Intent intent = new Intent( Home.this,LastListen.class);
-                startActivity(intent);
+                 FirebaseFirestore.getInstance().collection("lastlisten").document("last").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                       speeakVoice(documentSnapshot.getString("name").toString());
+                    }
+                });
 
             }
         });

@@ -1,5 +1,7 @@
 package com.example.quranichelper;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
@@ -14,18 +16,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.support.v7.widget.Toolbar;
 import android.widget.Switch;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.protobuf.Any;
 
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static android.widget.Toast.LENGTH_LONG;
 
@@ -41,7 +47,9 @@ LinearLayout feedBackRecord;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed_back );
+
         setSupportActionBar((Toolbar) findViewById(R.id.my_toolbar));
+        getSupportActionBar().setTitle("User Feedback");
         input= findViewById(R.id.messageFeed);
         feedBackRecord = findViewById(R.id.feedBackRecord);
         feedBackRecord.setLongClickable(true);
@@ -73,6 +81,9 @@ LinearLayout feedBackRecord;
         });
 
     }
+
+
+
     public void intilaizeEngine()//this is the code to initilize Text to Speach
     {
 
@@ -109,34 +120,50 @@ input.setText("");
     }
     public void sendFeedBack()
     {
+        String s  =  getEmail();
 
         Map<String, Object> dictionary = new HashMap();
         dictionary.put("Date",new Date().toString());
         dictionary.put("feedBack",input.getText().toString());
-        FirebaseFirestore ref = FirebaseFirestore.getInstance();
-        ref.collection("Feedback").document("7").set(dictionary).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onSuccess(Void aVoid) {
-                speeakVoice("FeedBack Sent SuccessFully");
-                mSP.cancel();
-                mSP.stopListening();
+        final FirebaseFirestore ref = FirebaseFirestore.getInstance();
+
+        if(input.getText().length()>0) {
+            ref.collection("Feedback").document(s).set(dictionary).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                @Override
+                public void onSuccess(Void aVoid) {
+                    speeakVoice("FeedBack Sent SuccessFully");
+                    ref.collection("feednotification").document("notify").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            Long  val = Long.valueOf( documentSnapshot.getLong("value"));
+                            val = val+1;
+                            ref.collection("feednotification").document("notify").update("value",val);
+                        }
+                    });
+                    mSP.cancel();
+                    mSP.stopListening();
 
 
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                speeakVoice("THere is no internet connection Availabale");
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                       mSP.startListening(intent);
-                    }
-                },3000);
-            }
-        });
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    speeakVoice("THere is no internet connection Availabale");
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSP.startListening(intent);
+                        }
+                    }, 3000);
+                }
+            });
+        }
+        else
+        {
+            speeakVoice("feedback must not be empty");
+        }
     }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public  void speeakVoice(String mess)//code to speak input
@@ -219,7 +246,6 @@ input.setText("");
     }
 
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -255,6 +281,8 @@ input.setText("");
         mSP.destroy();
     }
 
+
+
     public void setInetent()//set intent
     {
          intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -282,6 +310,23 @@ input.setText("");
 
         public abstract void onSingleClick(View v);
         public abstract void onDoubleClick(View v);
+    }
+
+    String getEmail()
+    {
+        String email = null;
+        Pattern pattern = Patterns.EMAIL_ADDRESS;
+        Account[] accounts = AccountManager.get(this).getAccounts();
+
+        for (Account account:accounts) {
+            if(pattern.matcher(account.name).matches()) {
+                email = account.name;
+
+            }
+
+        }
+        Log.d("email",email);
+        return email;
     }
 
 }

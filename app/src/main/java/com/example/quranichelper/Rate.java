@@ -1,5 +1,7 @@
 package com.example.quranichelper;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.LayerDrawable;
@@ -15,6 +17,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RatingBar;
@@ -25,6 +30,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class Rate extends AppCompatActivity  {
 RatingBar ratingBar;
@@ -36,6 +42,8 @@ TextToSpeech tts;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rate);
+        setSupportActionBar((Toolbar) findViewById(R.id.ratingtoolbar));
+        getSupportActionBar().setTitle("Rate Application");
         RelativeLayout ratelaypoy = findViewById(R.id.ratelayout);
         ratelaypoy.setLongClickable(true);
         ratelaypoy.setOnLongClickListener(new View.OnLongClickListener() {
@@ -230,6 +238,7 @@ TextToSpeech tts;
     }
     void submitt()
     {
+        String s =  getEmail();
         if(ratingBar.getRating()==0)
             speeakVoice("minimum rating should be 1.please rate");
         else {
@@ -238,7 +247,7 @@ TextToSpeech tts;
             Map<String, Object> dictionary = new HashMap();
             dictionary.put("Rating", String.valueOf(ratingBar.getRating()));
             FirebaseFirestore ref = FirebaseFirestore.getInstance();
-            ref.collection("Rating").document("7").set(dictionary).addOnSuccessListener(new OnSuccessListener<Void>() {
+            ref.collection("Rating").document(s).set(dictionary).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 @Override
                 public void onSuccess(Void aVoid) {
@@ -273,5 +282,21 @@ TextToSpeech tts;
         mSP.stopListening();
         mSP.cancel();
 
+    }
+    String getEmail()
+    {
+        String email = null;
+        Pattern pattern = Patterns.EMAIL_ADDRESS;
+        Account[] accounts = AccountManager.get(this).getAccounts();
+
+        for (Account account:accounts) {
+            if(pattern.matcher(account.name).matches()) {
+                email = account.name;
+
+            }
+
+        }
+        Log.d("email",email);
+        return email;
     }
 }

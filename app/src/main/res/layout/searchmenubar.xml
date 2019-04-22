@@ -2,13 +2,13 @@
 <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/Green"
+        android:background="@color/Black_Cat"
         android:elevation="4dp"
         xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
         style="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar">
 
-    <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent">
-        <Switch android:layout_width="match_parent" android:id="@+id/surahSwitch" android:text="Surah" android:textSize="30sp"   android:layout_height="50dp"/>
+    <RelativeLayout  android:layout_width="match_parent" android:background="@color/Black_Cat"   android:layout_height="match_parent">
+        <Switch android:layout_width="match_parent" android:textColor="@color/White" android:background="@color/Black_Cat" android:id="@+id/surahSwitch" android:text="Surah" android:textSize="30sp"   android:layout_height="50dp"/>
     </RelativeLayout>
 
 

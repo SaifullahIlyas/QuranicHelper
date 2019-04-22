@@ -56,10 +56,9 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
         playBtn = findViewById(R.id.playImag);
         pauseBtn = findViewById(R.id.pauseImg);
         StopBtn = findViewById(R.id.stopImg);
-        Intent intent = getIntent();
-        Bundle extra = intent.getExtras();
-        s = extra.getString("surahname");
-        status = extra.getString("switch");
+        Bundle intent = getIntent().getExtras();
+        s = intent.getString("surahname");
+        status = intent.getString("switch");
         Log.d("Status is",status);
         Log.d("iput",s);
         setPlayerDataSource(s,status);
@@ -112,22 +111,22 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
 
     }
 
-    public void setPlayerDataSource(String s,String status)
+    public void setPlayerDataSource(final String s,String status)
     {
+
 
         try {
             player = new MediaPlayer();
             player.setAudioStreamType(AudioManager.STREAM_MUSIC);
             final FirebaseStorage storage = FirebaseStorage.getInstance();
 
-            FirebaseFirestore fs;
-                fs = FirebaseFirestore.getInstance();
-            DocumentReference ref = fs.collection("parah").document(s);
-            if(status=="OFF")
-                    ref = fs.collection("parah").document(s);
-            else if(status=="ON") {
-                ref = fs.collection("surah").document(s);
-            }
+
+
+            final   FirebaseFirestore  fs = FirebaseFirestore.getInstance();
+            //DocumentReference ref = fs.collection("parah").document(s);
+            if(status.length()<2)
+            {
+              DocumentReference  ref = fs.collection("parah").document(s);
                 ref.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -146,6 +145,7 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
                                     @Override
                                     public void onPrepared(MediaPlayer mp) {
                                         mp.start();
+                                        fs.collection("lastlisten").document("last").update("name","You listen parah"+" "+s);
                                     }
                                 });
                                 player.prepareAsync();
@@ -155,6 +155,41 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
 
                     }
                 });
+
+            }
+
+            else if(status.length()>2) {
+               DocumentReference ref = fs.collection("surah").document(s);
+                ref.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        StorageReference stgRef = storage.getReference().child(documentSnapshot.getString("storageRef"));
+                        Log.d("ref",stgRef.getDownloadUrl().toString());
+                        stgRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                try {
+                                    player.setDataSource(Listen.this,uri);
+                                    Log.d("dataSource",uri.toString());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                    @Override
+                                    public void onPrepared(MediaPlayer mp) {
+                                        mp.start();
+                                        fs.collection("lastlisten").document("last").update("name","You listen surah"+" "+s);
+                                    }
+                                });
+                                player.prepareAsync();
+
+                            }
+                        });
+
+                    }
+                });
+            }
+
 
             } catch (Exception e) {
                 Log.d("Exception", e.getLocalizedMessage());
@@ -267,10 +302,10 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
 
     private void forword() {
         Log.d("mp3 forward"," song fordward");
-        if(player.isPlaying()&&player.getCurrentPosition()<player.getDuration()-5000)
-        player.seekTo(player.getCurrentPosition()+5000);
-        else if(!player.isPlaying()&&player.getCurrentPosition()<player.getDuration()-5000) {
-            player.seekTo(player.getCurrentPosition() + 5000);
+        if(player.isPlaying()&&player.getCurrentPosition()<player.getDuration()-15000)
+        player.seekTo(player.getCurrentPosition()+15000);
+        else if(!player.isPlaying()&&player.getCurrentPosition()<player.getDuration()-15000) {
+            player.seekTo(player.getCurrentPosition() + 15000);
         }
 
 
@@ -278,10 +313,10 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
 
     private void backward() {
         Log.d("mp3 backward"," Backward");
-        if(player.isPlaying() && player.getCurrentPosition()>5000)
-            player.seekTo(player.getCurrentPosition()-5000);
-        else if(!player.isPlaying()&&player.getCurrentPosition()<player.getDuration()+5000) {
-            player.seekTo(player.getCurrentPosition() - 5000);
+        if(player.isPlaying() && player.getCurrentPosition()>15000)
+            player.seekTo(player.getCurrentPosition()-15000);
+        else if(!player.isPlaying()&&player.getCurrentPosition()<player.getDuration()+15000) {
+            player.seekTo(player.getCurrentPosition() - 15000);
         }
     }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -425,5 +460,9 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
         super.onResume();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
 
+    }
 }

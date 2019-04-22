@@ -43,11 +43,10 @@ public class SplashScreen extends AppCompatActivity {
        player.start();
         TextView textView = findViewById(R.id.applabel);
          ImageView imageView = findViewById(R.id.audioanimation);
-         ImageView moveImage=  findViewById(R.id.moveImage);
         final boolean isAvalibale = isNetworkAvailable();
 
 
-        
+
 
        /* Animation animation;
         animation = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.blink);

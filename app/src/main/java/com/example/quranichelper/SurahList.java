@@ -149,6 +149,7 @@ searchView = findViewById(R.id.search);
         view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                FirebaseFirestore Fs  = FirebaseFirestore.getInstance();
 
                 com.example.quranichelper.datalistdetail data;
 
@@ -157,17 +158,13 @@ searchView = findViewById(R.id.search);
                     Intent intent = new Intent(SurahList.this,Listen.class);
                     if(surahSwith.isChecked()) {
                         data =  surahArrayList.get(position);
-                        Bundle extra =  new Bundle();
-                        extra.putString("surahname", data.getName().toString());
-                        extra.putString("switch","ON");
-                        intent.putExtras(extra);
+                        intent.putExtra("surahname", data.getName().toString());
+                        intent.putExtra("switch","dgdgsgsg");
                     }
                     else {
                         data =  listname.get(position);
-                        Bundle extra =  new Bundle();
-                        extra.putString("surahname", data.getName().toString());
-                        extra.putString("switch","OFF");
-                        intent.putExtras(extra);
+                        intent.putExtra("surahname", data.getName().toString());
+                        intent.putExtra("switch","");
 
                     }
                     startActivity(intent);

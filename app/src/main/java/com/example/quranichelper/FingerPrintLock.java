@@ -109,8 +109,6 @@ public class FingerPrintLock extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Intent intent = new Intent(FingerPrintLock.this,GoogleAccount.class);
-                        startActivity(intent);
                     }
                 },3000);
 
@@ -266,8 +264,6 @@ public class FingerPrintLock extends AppCompatActivity {
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            Intent intent = new Intent(FingerPrintLock.this,GoogleAccount.class);
-            startActivity(intent);
             return false;
         }
 
