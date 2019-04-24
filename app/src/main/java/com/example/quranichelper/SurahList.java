@@ -25,19 +25,17 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class SurahList extends AppCompatActivity {
     SpeechRecognizer mSP;
     TextToSpeech tts;
+    Map<String,String[]> parahDic;
+    Map<String,String[]> surahDic;
     ArrayList<datalistdetail> surahArrayList;
-     ArrayList<datalistdetail> listname;
+    ArrayList<datalistdetail> listname;
     Intent  intent;
-    Map<String,String[]> mykeyWordDictionary;
-String[] suratMoedl;
+    String[] suratMoedl;
     ListView surahList;
     FirebaseFirestore fs;
     datalistdetail datalistdetail;
@@ -50,14 +48,19 @@ String[] suratMoedl;
     protected void onCreate(Bundle savedInstanceState) {
         suratMoedl = getResources().getStringArray(R.array.suraharray);
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_surah_list);
+        parahDic = new HashMap<>();
+        surahDic  = new HashMap<>();
+        intilizeParahDictionary();//intilize parah dictionary
+        intilizeSurahDictionary();// intilize sura dictionary
         surahList = findViewById(R.id.surahListView);
 
         setupSurahDictionary();
-surahArrayList =  new ArrayList<>()  ;    //  handleVoiceSearch(getIntent())
+        surahArrayList =  new ArrayList<>()  ;    //  handleVoiceSearch(getIntent())
 
 
-searchView = findViewById(R.id.search);
+        searchView = findViewById(R.id.search);
         setSupportActionBar((Toolbar) findViewById(R.id.searchmenubar));
         surahSwith =  findViewById(R.id.surahSwitch);
         surahSwith.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -211,180 +214,208 @@ searchView = findViewById(R.id.search);
 
 
     void setupSurahDictionary()
-{
-    String[] array = getResources().getStringArray(R.array.suraharray);
-    for(String s:array)
-        Log.d("smsmms",s);
-}
-private void setOnItemListListner()
-{
-   view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-       @Override
-       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-           Toast.makeText(SurahList.this,String.valueOf(position),Toast.LENGTH_LONG).show();
-           view.getParent();
-       }
-   });
-}
-void signIN()
-{
-    FirebaseAuth Auth  = FirebaseAuth.getInstance();
-    if(Auth==null)
     {
-        Log.d("userAuth","NouserFound");
+        String[] array = getResources().getStringArray(R.array.suraharray);
+        for(String s:array)
+            Log.d("smsmms",s);
     }
-    else
+    private void setOnItemListListner()
     {
-        Auth.signInWithEmailAndPassword("saifullahilyas907@gmail.com","miang367").addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+        view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onSuccess(AuthResult authResult) {
-                Log.d("userAuth","Successfully signIn");
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("userAuth",e.getLocalizedMessage());
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(SurahList.this,String.valueOf(position),Toast.LENGTH_LONG).show();
+                view.getParent();
             }
         });
     }
-}
-//speach recognizer code
-public void setInetent()//set intent
-{
-    intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-    intent.putExtra(RecognizerIntent.EXTRA_RESULTS,1);
+    void signIN()
+    {
+        FirebaseAuth Auth  = FirebaseAuth.getInstance();
+        if(Auth==null)
+        {
+            Log.d("userAuth","NouserFound");
+        }
+        else
+        {
+            Auth.signInWithEmailAndPassword("saifullahilyas907@gmail.com","miang367").addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                @Override
+                public void onSuccess(AuthResult authResult) {
+                    Log.d("userAuth","Successfully signIn");
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d("userAuth",e.getLocalizedMessage());
+                }
+            });
+        }
+    }
+    //speach recognizer code
+    public void setInetent()//set intent
+    {
+        intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_RESULTS,1);
 
 
 
 
-}
+    }
 
     public  void getSpeachRecognizer()//set recognition engine
-{
-    if(SpeechRecognizer.isRecognitionAvailable(this))
     {
-        mSP = SpeechRecognizer.createSpeechRecognizer(this);
-        mSP.setRecognitionListener(new RecognitionListener() {
-            @Override
-            public void onReadyForSpeech(Bundle params) {
+        if(SpeechRecognizer.isRecognitionAvailable(this))
+        {
+            mSP = SpeechRecognizer.createSpeechRecognizer(this);
+            mSP.setRecognitionListener(new RecognitionListener() {
+                @Override
+                public void onReadyForSpeech(Bundle params) {
 
-            }
+                }
 
-            @Override
-            public void onBeginningOfSpeech() {
-                Toast.makeText(SurahList.this,"Speach start",Toast.LENGTH_LONG).show();
-            }
+                @Override
+                public void onBeginningOfSpeech() {
+                    Toast.makeText(SurahList.this,"Speach start",Toast.LENGTH_LONG).show();
+                }
 
-            @Override
-            public void onRmsChanged(float rmsdB) {
+                @Override
+                public void onRmsChanged(float rmsdB) {
 
-            }
+                }
 
-            @Override
-            public void onBufferReceived(byte[] buffer) {
-                if(  buffer.length>1)
-                    Toast.makeText(SurahList.this,"more than one voice detecd",Toast.LENGTH_LONG).show();
-            }
+                @Override
+                public void onBufferReceived(byte[] buffer) {
+                    if(  buffer.length>1)
+                        Toast.makeText(SurahList.this,"more than one voice detecd",Toast.LENGTH_LONG).show();
+                }
 
-            @Override
-            public void onEndOfSpeech() {
-                // Toast.makeText(Home.this,"This is End",Toast.LENGTH_LONG).show();
+                @Override
+                public void onEndOfSpeech() {
+                    // Toast.makeText(Home.this,"This is End",Toast.LENGTH_LONG).show();
 
-            }
+                }
 
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onError(int error) {
-                //Toast.makeText(Home.this,"Error Occur",Toast.LENGTH_LONG).show();
-                if (error==6) {
-                   // speeakVoice("please Select the Right option");
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                @Override
+                public void onError(int error) {
+                    //Toast.makeText(Home.this,"Error Occur",Toast.LENGTH_LONG).show();
+                    if (error==6) {
+                        // speeakVoice("please Select the Right option");
 
+                        try {
+                            mSP.startListening(intent);
+                        } catch (Exception e) {
+                            Toast.makeText(SurahList.this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                }
+
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                @Override
+                public void onResults(Bundle results) {
                     try {
-                        mSP.startListening(intent);
-                    } catch (Exception e) {
-                        Toast.makeText(SurahList.this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                        ArrayList<String> result = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                        if(result!=null) {
+                            String result1 =result.get(0).toString();
+                            processResult(result1);
+                            Log.d("Recognizer input",result1 );
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Log.d("Message",e.getLocalizedMessage());
                     }
                 }
 
-            }
-
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onResults(Bundle results) {
-                try {
-                    ArrayList<String> result = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                    if(result!=null) {
-                        String result1 =result.get(0).toString();
-                        processResult(result1);
-                        Log.d("Recognizer input",result1 );
-                    }
-                }
-                catch (Exception e)
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                private void processResult(String mytringRes1)//code to handle commands
                 {
-                    Log.d("Message",e.getLocalizedMessage());
+                    String parahResult;
+                    String outputval = "";
+                    String surahNAmeBuilder = "";
+                    String[] surahModel = new String[]{"Surah", "Sura", "Surat", "Subura"};
+                    String[] playModel = new String[]{"Play", "lay", "playyy"};
+                    String[] paraMOdel = new String[]{"para", "parah", "Tara"};
+
+                    String[] myString = mytringRes1.split(" ");
+
+                    if(myString.length<=3)//first check for command
+                    { Log.d("String ",myString[0]);
+                        Log.d("String ",myString[1]);
+                        Log.d("String ",myString[2]);
+
+                        if(stringCompare(myString[0].toLowerCase().trim(),playModel[0].toLowerCase().trim())==0)
+                        {
+                            if(stringCompare(myString[1].toLowerCase().trim(),paraMOdel[0].toLowerCase().trim())==0)
+                            {
+                                Log.d("in parah","yes");
+                                parahResult =  findParahName(myString[2].trim());
+                                Toast.makeText(SurahList.this,parahResult,Toast.LENGTH_LONG).show();
+                            }
+                            else if (myString[1].equals(surahModel[0]) ||myString[1].equals(surahModel[1]) || myString[1].equals(surahModel[2]))
+                            {
+                                parahResult  = findSurahName(myString[2]);
+                            }
+
+
+                        }
+                        else
+                            speeakVoice("make sure you command start with play");
+
+
+
+
+                    }
+                    else {
+                        speeakVoice("make sure you are speaking the right command and verify the noice");
+                    }
+
                 }
-            }
 
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            private void processResult(String mytringRes1)//code to handle commands
-            {
-                String outputval = "";
-                String surahNAmeBuilder = "";
-                String[] surahModel = new String[]{"Surah", "Sura", "Surat", "Subura"};
-                String[] playModel = new String[]{"Play", "lay", "playyy"};
-                String[] paraMOdel = new String[]{"para", "parah", "Tara", ""};
+                private String findSurahName(String  name)//find surah name that effected person want to play
+                { String val = "Alif Lam Meem";
 
-                String[] myString = mytringRes1.split(" ");
-
-                String s = getSurahConfidence(mytringRes1);
-                if (s == "parah30") {
-                    Intent intent = new Intent(SurahList.this, Listen.class);
-                    intent.putExtra("surahname", "parah30");
-                    startActivity(intent);
-                } else if (s == "Type1") {
-                   String ss = mytringRes1.replaceAll("\\D+","");
-                   Log.d("Surah",ss);
+                    return val ;
                 }
 
-            }
+                private String findParahName(String name)//method to find the parah name that the affected person want to play
+                {
+                    String val = "Alif Lam Meem";
+                    for (Map.Entry<String, String[]> entry : parahDic.entrySet()) {
+                        String key = entry.getKey();
+                        String [] arrayval =  entry.getValue();
+                        for (String s : arrayval)
+                        {
+                            if(stringCompare(name.toLowerCase().trim(),s.toLowerCase().trim())==0)
+                            {
+                                val = key;
+                                break;
+
+                            }
+                        }
+                    }
+                    return val;
+
+                }
 
 
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onPartialResults(Bundle partialResults) {
-            }
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                @Override
+                public void onPartialResults(Bundle partialResults) {
+                }
 
-            @Override
-            public void onEvent(int eventType, Bundle params) {
+                @Override
+                public void onEvent(int eventType, Bundle params) {
 
-            }
-        });
+                }
+            });
+        }
+
     }
 
-}
-
-String getSurahConfidence(String name) {
-        String command = "";
-        String commandType1 = "play para 30";
-        String commandType2 = "play para 30 Surah 30";
-        String commandType3 = "play para 30 surah 30 Ayat 30 ";
-        int length = name.length();
-        if(length <=commandType1.length()+2 && name.contains("play")||name.contains("lay"))
-        {
-            command ="parah30";
-        }
-        else if(length<=commandType2.length()+2&& name.contains("play")||name.contains("lay")&&(name.contains("Surah")||name.contains("sura")))
-        {
-            command =  "type2";
-        }
-        else  if(length<=commandType3.length()+2&& (name.contains("play")||name.contains("lay")))
-        {
-            command = "type3";
-        }
-        return  command;
-}
 
     @Override
     protected void onResume() {
@@ -403,11 +434,6 @@ String getSurahConfidence(String name) {
         mSP.cancel();;
         mSP.destroy();
     }
-void  createDictionary()
-{
-    mykeyWordDictionary.put("Al-Fajr",new String[]{"Alphonsa"});
-    mykeyWordDictionary.put("Al-fil",new String[]{"I'll feel"});
-}
     public void intilaizeEngine()//this is the code to initilize Text to Speach
     {
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
@@ -439,5 +465,56 @@ void  createDictionary()
         //String speakMeassage=input.getText().toString();
         tts.speak(mess,TextToSpeech.QUEUE_FLUSH,null,null);
 
+    }
+    private  void intilizeParahDictionary()
+    {
+        parahDic .put("Alif Lam Meem",new String[]{"1","one"});
+        parahDic .put("Sayaqool",new String[]{"2","two"});
+        parahDic .put("Tilkal Rusull",new String[]{"3","three"});
+        parahDic .put("Wal Mohsanat",new String[]{"4","four"});
+        parahDic .put("La Yuhibbullah",new String[]{"5","five"});
+        parahDic .put("Wa Iza Samiu",new String[]{"6","six"});
+        parahDic .put("Wa Lau Annana",new String[]{"7","seven"});
+        parahDic .put("Qalal Malao",new String[]{"8","eight"});
+        parahDic .put("Wa Alamu",new String[]{"9","nine"});
+        parahDic .put("Yatazeroon",new String[]{"10","ten"});
+    }
+    private  void  intilizeSurahDictionary()
+    {
+        surahDic .put("one",new String[]{"1","One"});
+        surahDic .put("two",new String[]{"2","two"});
+        surahDic .put("three",new String[]{"3","three"});
+        surahDic .put("four",new String[]{"4","four"});
+        surahDic .put("five",new String[]{"5","five"});
+        surahDic .put("six",new String[]{"6","six"});
+        surahDic.put("seven",new String[]{"7","seven"});
+        surahDic .put("eight",new String[]{"8","eight"});
+        surahDic .put("nine",new String[]{"9","nine"});
+        surahDic .put("ten",new String[]{"10","ten"});
+
+    }
+    public static int stringCompare(String str1, String str2)
+    {
+
+        int l1 = str1.length();
+        int l2 = str2.length();
+        int lmin = Math.min(l1, l2);
+
+        for (int i = 0; i < lmin; i++) {
+            int str1_ch = (int)str1.charAt(i);
+            int str2_ch = (int)str2.charAt(i);
+
+            if (str1_ch != str2_ch) {
+                return str1_ch - str2_ch;
+            }
+        }
+
+        if (l1 != l2) {
+            return l1 - l2;
+        }
+
+        else {
+            return 0;
+        }
     }
 }

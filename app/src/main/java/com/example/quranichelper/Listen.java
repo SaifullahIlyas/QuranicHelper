@@ -87,7 +87,7 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
             public void onClick(View v) {
                 pauseBtn.setEnabled(true);
                 if(!playHandler)
-                setPlayerDataSource(s,status);
+                    setPlayerDataSource(s,status);
                 player.start();
                 playBtn.setEnabled(false);
                 bar.setProgress((player.getDuration()));
@@ -126,7 +126,7 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
             //DocumentReference ref = fs.collection("parah").document(s);
             if(status.length()<2)
             {
-              DocumentReference  ref = fs.collection("parah").document(s);
+                DocumentReference  ref = fs.collection("parah").document(s);
                 ref.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -159,7 +159,7 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
             }
 
             else if(status.length()>2) {
-               DocumentReference ref = fs.collection("surah").document(s);
+                DocumentReference ref = fs.collection("surah").document(s);
                 ref.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -191,15 +191,15 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
             }
 
 
-            } catch (Exception e) {
-                Log.d("Exception", e.getLocalizedMessage());
-            }
-            //player.setDataSource("https://firebasestorage.googleapis.com/v0/b/fir-b9532.appspot.com/o/songs%2Fsong1.mp3?alt=media&token=a4424b28-93c3-4a0c-a6b9-9136dcf63335");
-           // player.prepare();
-        }// catch (Exception e) {
-            // TODO: handle exception
-       // }
-   // }
+        } catch (Exception e) {
+            Log.d("Exception", e.getLocalizedMessage());
+        }
+        //player.setDataSource("https://firebasestorage.googleapis.com/v0/b/fir-b9532.appspot.com/o/songs%2Fsong1.mp3?alt=media&token=a4424b28-93c3-4a0c-a6b9-9136dcf63335");
+        // player.prepare();
+    }// catch (Exception e) {
+    // TODO: handle exception
+    // }
+    // }
     public void Pause()
     {
         if(player.isPlaying()) {
@@ -264,7 +264,7 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
             }
             else
             {
-                 increaseVolume();
+                increaseVolume();
             }
         }
         return false;
@@ -272,28 +272,28 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
 
     private void decreseVolume() {
 
-            AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
-            int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            float percent = 0.1f;
-            int tenVolume = (int) (maxVolume * percent);
-            volume=currentVolume-tenVolume;
-            if(volume>=0)
+        AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        float percent = 0.1f;
+        int tenVolume = (int) (maxVolume * percent);
+        volume=currentVolume-tenVolume;
+        if(volume>=0)
             audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
-            volume=0;
-        }
-        void increaseVolume()
-        {
-            AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
-            int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            float percent = 0.1f;
-            int tenVolume = (int) (maxVolume * percent);
-            volume=currentVolume+tenVolume;
-            if(volume<=100)
-                audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
-            volume=0;
-        }
+        volume=0;
+    }
+    void increaseVolume()
+    {
+        AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        float percent = 0.1f;
+        int tenVolume = (int) (maxVolume * percent);
+        volume=currentVolume+tenVolume;
+        if(volume<=100)
+            audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+        volume=0;
+    }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         gestureDetector.onTouchEvent(event);
@@ -303,7 +303,7 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
     private void forword() {
         Log.d("mp3 forward"," song fordward");
         if(player.isPlaying()&&player.getCurrentPosition()<player.getDuration()-15000)
-        player.seekTo(player.getCurrentPosition()+15000);
+            player.seekTo(player.getCurrentPosition()+15000);
         else if(!player.isPlaying()&&player.getCurrentPosition()<player.getDuration()-15000) {
             player.seekTo(player.getCurrentPosition() + 15000);
         }
@@ -345,7 +345,7 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
                         bar.setProgress(100);
                     bar.setProgress(progress);
                 }
-        }
+            }
 
 
 
@@ -357,12 +357,12 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
     }
     public void switchBetweenStates()
     {
-      if(player.isPlaying())
-          player.pause();
-      else
-      {
-          player.start();
-      }
+        if(player.isPlaying())
+            player.pause();
+        else
+        {
+            player.start();
+        }
     }
 
     @Override
@@ -390,10 +390,10 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
         timeStr = timeInSecond.toString();
         if(timeInSecond>60)
         {
-           if(timeInSecond%60!=0)
-           {
-               timeStr = String.valueOf(Math.floor(timeInSecond/60))+":"+String.valueOf(timeInSecond%60);
-           }
+            if(timeInSecond%60!=0)
+            {
+                timeStr = String.valueOf(Math.floor(timeInSecond/60))+":"+String.valueOf(timeInSecond%60);
+            }
 
         }
         Toast.makeText(this,timeStr,Toast.LENGTH_LONG).show();

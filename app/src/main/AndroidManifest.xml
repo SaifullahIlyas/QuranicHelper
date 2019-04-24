@@ -46,6 +46,9 @@
         </activity>
         <activity android:name=".Listen">
         </activity>
+        <activity android:name=".HelpImplementation">
+
+        </activity>
         <activity android:name=".feedbackJ">
         </activity>
         <activity android:name=".Home">

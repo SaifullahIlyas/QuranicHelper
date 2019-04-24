@@ -125,6 +125,8 @@ public class Home extends AppCompatActivity {
 
             @Override
             public void onDoubleClick(View v) {
+                Intent intent = new Intent( Home.this,HelpImplementation.class);
+                startActivity(intent);
 
             }
         });
