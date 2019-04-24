@@ -5,6 +5,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Handler;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -186,8 +187,14 @@ public class SurahList extends AppCompatActivity {
         view.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(SurahList.this,String.valueOf(id),Toast.LENGTH_LONG).show();
-                mSP.startListening(intent);
+                speeakVoice("speak parah or surah number");
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSP.startListening(intent);
+                    }
+                },2000);
+
                 return  true;
             }
         });
@@ -347,17 +354,22 @@ public class SurahList extends AppCompatActivity {
                         Log.d("String ",myString[1]);
                         Log.d("String ",myString[2]);
 
-                        if(stringCompare(myString[0].toLowerCase().trim(),playModel[0].toLowerCase().trim())==0)
+                        if(stringCompare(myString[0].toLowerCase().trim(),playModel[0].toLowerCase().trim())==0 || stringCompare(myString[0].toLowerCase().trim(),playModel[1].toLowerCase().trim())==0 || stringCompare(myString[0].toLowerCase().trim(),playModel[2].toLowerCase().trim())==0)
                         {
-                            if(stringCompare(myString[1].toLowerCase().trim(),paraMOdel[0].toLowerCase().trim())==0)
+                            if(stringCompare(myString[1].toLowerCase().trim(),paraMOdel[0].toLowerCase().trim())==0 || stringCompare(myString[1].toLowerCase().trim(),paraMOdel[1].toLowerCase().trim())==0 || stringCompare(myString[1].toLowerCase().trim(),paraMOdel[2].toLowerCase().trim())==0)
                             {
                                 Log.d("in parah","yes");
                                 parahResult =  findParahName(myString[2].trim());
-                                Toast.makeText(SurahList.this,parahResult,Toast.LENGTH_LONG).show();
+                                intent.putExtra("surahname",parahResult.trim());
+                                intent.putExtra("switch","dgdgsgsg");
+                                startActivity(intent);
                             }
-                            else if (myString[1].equals(surahModel[0]) ||myString[1].equals(surahModel[1]) || myString[1].equals(surahModel[2]))
+                            else if (stringCompare(myString[1].toLowerCase().trim(),surahModel[0].toLowerCase().trim())==0 || stringCompare(myString[1].toLowerCase().trim(),surahModel[1].toLowerCase().trim())==0 || stringCompare(myString[1].toLowerCase().trim(),surahModel[2].toLowerCase().trim())==0)
                             {
                                 parahResult  = findSurahName(myString[2]);
+                                intent.putExtra("surahname",parahResult.trim());
+                                intent.putExtra("switch","dgdgsgsg");
+                                startActivity(intent);
                             }
 
 
@@ -481,16 +493,21 @@ public class SurahList extends AppCompatActivity {
     }
     private  void  intilizeSurahDictionary()
     {
-        surahDic .put("one",new String[]{"1","One"});
-        surahDic .put("two",new String[]{"2","two"});
-        surahDic .put("three",new String[]{"3","three"});
-        surahDic .put("four",new String[]{"4","four"});
-        surahDic .put("five",new String[]{"5","five"});
-        surahDic .put("six",new String[]{"6","six"});
-        surahDic.put("seven",new String[]{"7","seven"});
-        surahDic .put("eight",new String[]{"8","eight"});
-        surahDic .put("nine",new String[]{"9","nine"});
-        surahDic .put("ten",new String[]{"10","ten"});
+        surahDic .put("Al-Fatiha",new String[]{"1","One"});
+        surahDic .put("Al-Baqara",new String[]{"2","two"});
+        surahDic .put("Al-Imran",new String[]{"3","three"});
+        surahDic .put("An-Nisa",new String[]{"4","four"});
+        surahDic .put("Al-Maida",new String[]{"5","five"});
+        surahDic .put("Al-Anam",new String[]{"6","six"});
+        surahDic.put("Al-Araf",new String[]{"7","seven"});
+        surahDic .put("Al-Anfal",new String[]{"8","eight"});
+        surahDic .put("At-Tawba",new String[]{"9","nine"});
+        surahDic .put("Yunus",new String[]{"10","ten"});
+        surahDic .put("Hud",new String[]{"11","eleven"});
+        surahDic.put("Yusuf",new String[]{"12","twelve"});
+        surahDic .put("Ar-Rad",new String[]{"13","thirteen"});
+        surahDic .put("Ibrahim",new String[]{"14","fourteen"});
+        surahDic .put("Al-Hijr",new String[]{"15","fifteen"});
 
     }
     public static int stringCompare(String str1, String str2)
