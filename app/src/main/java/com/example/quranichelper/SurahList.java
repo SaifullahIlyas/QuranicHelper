@@ -360,16 +360,18 @@ public class SurahList extends AppCompatActivity {
                             {
                                 Log.d("in parah","yes");
                                 parahResult =  findParahName(myString[2].trim());
-                                intent.putExtra("surahname",parahResult.trim());
-                                intent.putExtra("switch","dgdgsgsg");
-                                startActivity(intent);
+                                Intent newintent = new Intent(SurahList.this,Listen.class);
+                                newintent.putExtra("surahname",parahResult.trim());
+                                newintent.putExtra("switch","");
+                                startActivity(newintent);
                             }
                             else if (stringCompare(myString[1].toLowerCase().trim(),surahModel[0].toLowerCase().trim())==0 || stringCompare(myString[1].toLowerCase().trim(),surahModel[1].toLowerCase().trim())==0 || stringCompare(myString[1].toLowerCase().trim(),surahModel[2].toLowerCase().trim())==0)
                             {
                                 parahResult  = findSurahName(myString[2]);
-                                intent.putExtra("surahname",parahResult.trim());
-                                intent.putExtra("switch","dgdgsgsg");
-                                startActivity(intent);
+                                Intent newintent = new Intent(SurahList.this,Listen.class);
+                                newintent.putExtra("surahname",parahResult.trim());
+                                newintent.putExtra("switch","dsjhsjsdj");
+                                startActivity(newintent);
                             }
 
 
@@ -388,9 +390,21 @@ public class SurahList extends AppCompatActivity {
                 }
 
                 private String findSurahName(String  name)//find surah name that effected person want to play
-                { String val = "Alif Lam Meem";
+                { String val = "Al-Fatiha";
+                    for (Map.Entry<String, String[]> entry : surahDic.entrySet()) {
+                        String key = entry.getKey();
+                        String [] arrayval =  entry.getValue();
+                        for (String s : arrayval)
+                        {
+                            if(stringCompare(name.toLowerCase().trim(),s.toLowerCase().trim())==0)
+                            {
+                                val = key;
+                                break;
 
-                    return val ;
+                            }
+                        }
+                    }
+                    return val;
                 }
 
                 private String findParahName(String name)//method to find the parah name that the affected person want to play

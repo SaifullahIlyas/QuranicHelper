@@ -33,25 +33,26 @@
 
         </activity>
         <activity
-                android:name=".SurahList"
+                android:name=".SurahList" android:screenOrientation="portrait"
                 android:theme="@style/Theme.AppCompat.NoActionBar">
         </activity>
-        <activity android:name=".FingerPrintLock">
-        </activity>
-        <activity android:name=".LastListen">
-        </activity>
-        <activity android:name=".Downloads">
-        </activity>
-        <activity android:name=".FavoriteList">
-        </activity>
-        <activity android:name=".Listen">
-        </activity>
-        <activity android:name=".HelpImplementation">
+        <activity android:name=".FingerPrintLock" android:screenOrientation="portrait" >
 
         </activity>
-        <activity android:name=".feedbackJ">
+        <activity android:name=".LastListen" android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".Home">
+        <activity android:name=".Downloads" android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".FavoriteList" android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".Listen" android:turnScreenOn="true" android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".HelpImplementation" android:screenOrientation="portrait">
+
+        </activity>
+        <activity android:name=".feedbackJ" android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".Home" android:screenOrientation="portrait">
 
 
 
