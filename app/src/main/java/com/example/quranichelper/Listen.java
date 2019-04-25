@@ -163,29 +163,32 @@ public class Listen extends AppCompatActivity implements GestureDetector.OnGestu
                 ref.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        StorageReference stgRef = storage.getReference().child(documentSnapshot.getString("storageRef"));
-                        Log.d("ref",stgRef.getDownloadUrl().toString());
-                        stgRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                try {
-                                    player.setDataSource(Listen.this,uri);
-                                    Log.d("dataSource",uri.toString());
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                    @Override
-                                    public void onPrepared(MediaPlayer mp) {
-                                        mp.start();
-                                        fs.collection("lastlisten").document("last").update("name","You listen surah"+" "+s);
+                        final String s = documentSnapshot.getString("storageRef");
+                        if (s != null) {
+                            StorageReference stgRef = storage.getReference().child("s" + s.substring(1));
+                            Log.d("ref", stgRef.getDownloadUrl().toString());
+                            stgRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    try {
+                                        player.setDataSource(Listen.this, uri);
+                                        Log.d("dataSource", uri.toString());
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
                                     }
-                                });
-                                player.prepareAsync();
+                                    player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                        @Override
+                                        public void onPrepared(MediaPlayer mp) {
+                                            mp.start();
+                                            fs.collection("lastlisten").document("last").update("name", "You listen surah" + " " + s);
+                                        }
+                                    });
+                                    player.prepareAsync();
 
-                            }
-                        });
+                                }
+                            });
 
+                        }
                     }
                 });
             }
